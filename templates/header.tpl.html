@@ -1,0 +1,29 @@
+<header class="container">
+	<nav class="navbar">
+		<a href="/" class="lead navbar-icon-link">
+			<img class="navbar-icon-img" src="/static/img/calendar.svg">
+			EventHorizon
+		</a>
+		<a href="/events" class="{if $path === '/events'}active{/if} navbar-icon-link">
+			<img class="navbar-icon-img" src="/static/img/globe.svg">
+			All events
+		</a>
+		{if $loggedIn}
+			<a href="/events/mine" class="{if $path === '/events/mine'}active{/if} navbar-icon-link">
+				<img class="navbar-icon-img" src="/static/img/star.svg">
+				My events
+			</a>
+			<a href="/events/new" class="{if $path === '/events/new'}active{/if} navbar-icon-link">
+				<img class="navbar-icon-img" src="/static/img/plus.svg">
+				New event
+			</a>
+		{/if}
+		{if !$loggedIn}
+			<a href="/login" class="{if $path === '/login'}active{/if} start-right-navbar-section">Login</a>
+		{/if}
+		{if $loggedIn}
+			<a href="/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
+			<a href="/logout" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" src="/static/img/logout.svg"></a>
+		{/if}
+	</nav>
+</header>
