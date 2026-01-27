@@ -11,7 +11,7 @@ class Templator
     private array $openMarkers;
     private const MARKERS = ["if", "for", "foreach"];
 
-	public function __construct(string $templatesFolder, string $compiledTemplatesFolder)
+	public function __construct(ComponentManager $componentManager, string $templatesFolder, string $compiledTemplatesFolder)
 	{
 		$this->templatesFolder = $templatesFolder;
 		$this->compiledTemplatesFolder = $compiledTemplatesFolder;
@@ -25,28 +25,28 @@ class Templator
 		}
 	}
 
-	private function validateIfFilenameIsTemplate(string $fileName) {
-		$bothFileExt = substr($fileName, strrpos($fileName, '.', -(strlen($fileName)-(strrpos($fileName, '.'))+1)));
+	private function validateIfFilenameIsTemplate(string $filePath) {
+		$bothFileExt = substr($filePath, strrpos($filePath, '.', -(strlen($filePath)-(strrpos($filePath, '.'))+1)));
 		if ($bothFileExt !== ".tpl.html") {
-            throw new Exception("Template '$fileName' has invalid extension '$bothFileExt' only '.tpl.html' supported");
+            throw new Exception("Template '$filePath' has invalid extension '$bothFileExt' only '.tpl.html' supported");
 		}
 	}
 
-	private function templateFilenameToCompiledFilename(string $fileName) {
-		$fileNameWithoutBothExt = substr($fileName, 0, strrpos($fileName, '.', -(strlen($fileName)-(strrpos($fileName, '.'))+1)));
+	private function templateFilenameToCompiledFilename(string $filePath) {
+		$fileNameWithoutBothExt = substr($filePath, 0, strrpos($filePath, '.', -(strlen($filePath)-(strrpos($filePath, '.'))+1)));
 		return $fileNameWithoutBothExt . ".php";
 	}
 
     /**
      * Load a template file into memory.
-     * @param string $fileName Path to the template file to be loaded.
+     * @param string $filePath Path to the template file to be loaded.
      */
-    private function loadTemplate(string $fileName)
+    private function loadTemplate(string $filePath)
     {
-		$this->validateIfFilenameIsTemplate($fileName);
-        $result = @file_get_contents($fileName);
+		$this->validateIfFilenameIsTemplate($filePath);
+        $result = @file_get_contents($filePath);
         if ($result === false) {
-            throw new Exception("Failed to open file '$fileName'!");
+            throw new Exception("Failed to open file '$filePath'!");
         } else {
             $this->loadedTemplate = $result;
         }
@@ -92,9 +92,9 @@ class Templator
 
     /**
      * Compile the loaded template (transpill it into interleaved-PHP) and save the result in a file.
-     * @param string $fileName Path where the result should be saved.
+     * @param string $filePath Path where the result should be saved.
      */
-    private function compileAndSave(string $fileName)
+    private function compileAndSave(string $filePath)
     {
         if (!isset($this->loadedTemplate)) {
             throw new Exception("No template is currently loaded!");
@@ -130,9 +130,9 @@ class Templator
             $formattedArray = implode("', '", $this->openMarkers);
             throw new Exception("There are opening markers without matching closing markers: '$formattedArray'");
         }
-        $result = @file_put_contents($fileName, data: $compiledTemplate);
+        $result = @file_put_contents($filePath, data: $compiledTemplate);
         if ($result === false) {
-            throw new Exception("Failed to write to file '$fileName'!");
+            throw new Exception("Failed to write to file '$filePath'!");
         }
     }
 }
