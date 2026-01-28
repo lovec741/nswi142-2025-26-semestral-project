@@ -8,14 +8,23 @@ class UserPresenter {
 		$this->componentManager = $componentManager;
 	}
 
-	public function getUserAuthArgs() {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
+	/**
+	 * @return ?UserModel UserModel if loaded succesfully else null
+	 */
+	private function loadUserFromSession(): ?UserModel {
+		$sessionManager = $this->componentManager->getByClass(SessionManager::class);
+		$userId = $sessionManager->getCurrentUserId();
 		$userModel = $this->componentManager->getByName("user.model");
 		$userExists = $userId === null ? false : $userModel->loadUserFromId($userId);
+		return $userExists ? $userModel : null;
+	}
+
+	public function getUserAuthArgs() {
+		$userModel = $this->loadUserFromSession();
+		$loggedIn = $userModel !== null;
 		$args = [
-			"loggedIn" => $userExists,
-			"currentUsername" => $userModel->getFullName()
+			"loggedIn" => $loggedIn,
+			"currentUsername" => $loggedIn ? $userModel->getFullName() : null
 		];
 		return $args;
 	}
@@ -24,81 +33,98 @@ class UserPresenter {
 		$this->componentManager->getByName("template_view")->renderTemplate("tos");
 	}
 
-	public function showLogin() {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
-		if (isset($userId)) {
+	public function redirectIfLoggedIn(string $redirectTo='/') {
+		$userModel = $this->loadUserFromSession();
+		if ($userModel !== null) {
 			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Already logged in!", "warn");
-			header('Location: /');
-			return;
+			header('Location: '.$redirectTo);
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
+	}
+
+	public function loadModelAndRedirectIfNotLoggedIn(string $redirectTo='/'): UserModel {
+		$userModel = $this->loadUserFromSession();
+		if ($userModel === null) {
+			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Not logged in!", "error");
+			header('Location: '.$redirectTo);
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+		return $userModel;
+	}
+
+	public function showLogin() {
+		$this->redirectIfLoggedIn();
 		$this->componentManager->getByName("template_view")->renderTemplate("login");
 	}
 
 	public function processLogin($postArgs) {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
-		if (isset($userId)) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Already logged in!", "warn");
-			header('Location: /');
-			return;
-		}
+		$this->redirectIfLoggedIn();
+		$sessionManager = $this->componentManager->getByClass(SessionManager::class);
 		$userModel = $this->componentManager->getByName("user.model");
 		if (!$userModel->checkIfUserExistsByEmail($postArgs["email"])) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("User doesn't exist!", "error");
+			$sessionManager->addFlashMessage("User doesn't exist!", "error");
 			header('Location: /login');
-			return;
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
 		$userModel->loadUserFromEmail($postArgs["email"]);
-		$session_manager->loginUser($userModel->getUserId());
-		$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Successfully logged in!", "success");
+		$sessionManager->loginUser($userModel->getUserId());
+		$sessionManager->addFlashMessage("Successfully logged in!", "success");
 		header('Location: /');
 	}
 
 	public function showRegister() {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
-		if (isset($userId)) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Already logged in!", "warn");
-			header('Location: /');
-			return;
-		}
+		$this->redirectIfLoggedIn();
 		$this->componentManager->getByName("template_view")->renderTemplate("register");
 	}
 
 	public function processRegister($postArgs) {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
-		if (isset($userId)) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Already logged in!", "warn");
-			header('Location: /');
-			return;
-		}
+		$this->redirectIfLoggedIn();
+		$sessionManager = $this->componentManager->getByClass(SessionManager::class);
 		$userModel = $this->componentManager->getByName("user.model");
 		if ($userModel->checkIfUserExistsByEmail($postArgs["email"])) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("You already have an account! Please login.", "warn");
+			$sessionManager->addFlashMessage("You already have an account! Please login.", "warn");
 			header('Location: /login');
-			return;
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
-		$userModel->createNewUser($postArgs["email"], $postArgs["fullName"], null);
-		$userModel->loadUserFromEmail($postArgs["email"]);
-		$session_manager->loginUser($userModel->getUserId());
-		$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Account successfully registered!", "success");
+		$userModel->createNewUserAndLoad($postArgs["email"], $postArgs["fullName"], $postArgs["password"]);
+		$sessionManager->loginUser($userModel->getUserId());
+		$sessionManager->addFlashMessage("Account successfully registered!", "success");
 		header('Location: /');
 	}
 
 	public function processLogout() {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$userId = $session_manager->getCurrentUserId();
-		if (!isset($userId)) {
-			$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Not logged in!", "error");
-			header('Location: /');
-			return;
-		}
-		$session_manager->logoutUser();
-		$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("You have been logged out!", "success");
+		$this->loadModelAndRedirectIfNotLoggedIn();
+		$sessionManager = $this->componentManager->getByClass(SessionManager::class);
+		$sessionManager->logoutUser();
+		$sessionManager->addFlashMessage("You have been logged out!", "success");
+		header('Location: /');
+	}
+
+	public function showSettings() {
+		$userModel = $this->loadModelAndRedirectIfNotLoggedIn();
+		$this->componentManager->getByName("template_view")->renderTemplate(
+			"settings",
+			[
+				"email" =>$userModel->getEmail()
+			]
+		);
+	}
+
+	public function processSettingsChange($postArgs) {
+		$userModel = $this->loadModelAndRedirectIfNotLoggedIn();
+		$userModel->updateCurrentUser($postArgs["fullName"], $postArgs["password"]);
+		$this->componentManager->getByClass(SessionManager::class)->addFlashMessage("Settings changed!", "success");
+		header('Location: /settings');
+	}
+
+	public function processDelete() {
+		$userModel = $this->loadModelAndRedirectIfNotLoggedIn();
+		$userModel->deleteCurrentUser();
+		$sessionManager = $this->componentManager->getByClass(SessionManager::class);
+		$sessionManager->logoutUser();
+		$sessionManager->addFlashMessage("Account deleted!", "success");
 		header('Location: /');
 	}
 }

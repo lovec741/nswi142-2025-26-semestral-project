@@ -25,12 +25,35 @@ class UserModel implements Model {
 		");
 	}
 
-	public function createNewUser($email, $full_name, $password): bool {
-		$result = $this->componentManager->getByName("db_manager")->dynamicQuery("
+	public function createNewUserAndLoad($email, $fullName, $password) {
+		$this->componentManager->getByName("db_manager")->dynamicQuery("
 			INSERT INTO users
 			(email, full_name, password) VALUES (?, ?, ?)
-		", "sss", $email, $full_name, $password);
-		return $result;
+		", "sss", $email, $fullName, $password);
+		$result = $this->componentManager->getByName("db_manager")->staticQuery("
+			SELECT LAST_INSERT_ID();
+		");
+		if (!$result)
+			return false;
+		$row = mysqli_fetch_array($result);
+		$this->userId = $row[0];
+		$this->email = $email;
+		$this->fullName = $fullName;
+	}
+
+	public function updateCurrentUser($fullName, $password) {
+		$this->componentManager->getByName("db_manager")->dynamicQuery("
+			UPDATE users
+			SET full_name = ?, password = ?
+			WHERE user_id = ?
+		", "ssi", $fullName, $password, $this->userId);
+	}
+
+	public function deleteCurrentUser() {
+		$this->componentManager->getByName("db_manager")->dynamicQuery("
+			DELETE FROM users
+			WHERE user_id = ?
+		", "i", $this->userId);
 	}
 
 	public function loadUserFromId(int $userId): bool {

@@ -1,16 +1,27 @@
 {include shared_top.tpl.html}
 <h1>Register</h1>
-<form action="./register" method="post">
-	<p>
-		<label for="email">E-mail:</label><br>
-		<input style="width: 50ch;" type="email" id="email" name="email" required>
-	</p>
-	<p>
-		<label for="fullName">Full name:</label><br>
-		<input style="width: 50ch;" type="text" id="fullName" name="fullName" required>
-	</p>
-	<button type="submit" class="btn">
-		Register
-	</button>
+<form action="/register" method="post">
+	<div style="width: 50ch;">
+		<p>
+			<label for="email">E-mail:</label><br>
+			<input type="email" id="email" name="email" required>
+		</p>
+		<p>
+			<label for="fullName">Full name:</label><br>
+			<input type="text" id="fullName" name="fullName" required>
+		</p>
+		<p>
+			<label for="email">Password</label><br>
+			<input type="password" id="password" name="password"><br>
+			<small>Password is optional and not used for authentication. It is only stored in the database in plain text to make the DB leaks a little more interesting.</small>
+		</p>
+		<p>
+			<input type="checkbox" id="tosAgree" name="tosAgree" required>
+			<label for="tosAgree">I Agree with the <a href="/tos" target="_blank">Terms of Service</a> and Accept My Fate</label>
+		</p>
+		<button type="submit" class="btn">
+			Register
+		</button>
+	</div>
 </form>
 {include shared_bottom.tpl.html}

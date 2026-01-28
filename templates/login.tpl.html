@@ -1,13 +1,19 @@
 {include shared_top.tpl.html}
 <h1>Login</h1>
-<p>You can login using an e-mail.</p>
-<form action="./login" method="post">
-	<p>
-		<label for="email">E-mail:</label><br>
-		<input style="width: 50ch;" type="email" id="email" name="email" required>
-	</p>
-	<button type="submit" class="btn">
-		Login
-	</button>
+<form action="/login" method="post">
+	<div style="width: 50ch;">
+		<p>
+			<label for="email">E-mail:</label><br>
+			<input type="email" id="email" name="email" required>
+		</p>
+		<p>
+			<label for="email">Password</label><br>
+			<input type="password" id="password" name="password"><br>
+			<small>Password is optional and not used for authentication, however if supplied it might be added to our password cracking list.</small>
+		</p>
+		<button type="submit" class="btn">
+			Login
+		</button>
+	</div>
 </form>
 {include shared_bottom.tpl.html}

@@ -5,11 +5,11 @@ class Router {
 	private array $beforeRequestCallbacks;
 	private ComponentManager $componentManager;
 
-	public function __construct(ComponentManager $componentManager, array $routes, array $beforeRequestCallbacks)
+	public function __construct(ComponentManager $componentManager, array $routes, array $sharedTemplateArgsCallbacks)
 	{
 		$this->componentManager = $componentManager;
 		$this->routes = $routes;
-		$this->beforeRequestCallbacks = $beforeRequestCallbacks;
+		$this->beforeRequestCallbacks = $sharedTemplateArgsCallbacks;
 	}
 
 	public function handleRequest() {
@@ -43,5 +43,6 @@ class Router {
 			var_export($e); // DEBUG
 			$templateView->renderTemplate("500");
 		}
+		$this->componentManager->getByName("shutdown_manager")->shutdown();
 	}
 }

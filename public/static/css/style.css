@@ -248,6 +248,7 @@ button.btn:active {
 	border-radius: 5px;
 	padding: 1rem;
 	opacity: 0.95;
+	pointer-events: all;
 }
 
 .flash-message.success {
@@ -263,4 +264,9 @@ button.btn:active {
 .flash-message.error {
 	background-color: red;
 	color: rgb(70, 70, 70);
+}
+
+/* FORMS */
+form input:not([type="checkbox"]) {
+	width: 100%;
 }

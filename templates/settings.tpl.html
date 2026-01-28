@@ -1,0 +1,30 @@
+{include shared_top.tpl.html}
+<h1>User settings</h1>
+<form action="/settings" method="post">
+	<div style="width: 50ch;">
+		<p>
+			<label>E-mail:</label><br>
+			<input type="text" disabled value="{= $email }"><br>
+			<small>Cannot be changed.</small>
+		</p>
+		<p>
+			<label for="fullName">Full name:</label><br>
+			<input type="text" id="fullName" name="fullName" required value="{= $currentUsername }">
+		</p>
+		<p>
+			<label for="email">Password</label><br>
+			<input type="password" id="password" name="password"><br>
+			<small>Password is optional and not used for authentication. It is only stored in the database in plain text to make the DB leaks a little more interesting.</small>
+		</p>
+		<button type="submit" class="btn">
+			Change
+		</button>
+	</div>
+</form>
+
+<form action="/settings/delete" method="POST" class="margin-top-lg" onsubmit="return confirm('Are you sure you want to delete your account?');">
+	<button type="submit" class="btn" style="background-color: red;">
+		Delete account
+	</button>
+</form>
+{include shared_bottom.tpl.html}

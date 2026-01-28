@@ -10,6 +10,10 @@
 	(() => {
 		const flashMessagesCont = document.getElementById("flash-messages-cont");
 
+		flashMessagesCont.addEventListener("click", () => {
+			flashMessagesCont.style.display = "none";
+		});
+
 		setInterval(() => {
 			flashMessagesCont.style.display = "none";
 		}, 5000);
