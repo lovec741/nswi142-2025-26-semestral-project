@@ -21,6 +21,9 @@ class Router {
 			$presenter = $this->componentManager->getByName($presenterName);
 			$templateView->addStoredArgs($presenter->$methodName());
 		}
+		$templateView->addStoredArgs([
+			"path" => $path
+		]);
 		if (!isset($this->routes[$path])) {
 			$templateView->renderTemplate("404");
 		}
@@ -37,6 +40,7 @@ class Router {
 				$presenter->$methodName($_GET);
 			}
 		} catch (Exception $e) {
+			var_export($e); // DEBUG
 			$templateView->renderTemplate("500");
 		}
 	}

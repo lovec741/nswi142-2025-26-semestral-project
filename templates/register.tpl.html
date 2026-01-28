@@ -1,13 +1,16 @@
 {include shared_top.tpl.html}
-<h1>Login</h1>
-<p>You can login using an e-mail.</p>
-<form action="./login" method="post">
+<h1>Register</h1>
+<form action="./register" method="post">
 	<p>
 		<label for="email">E-mail:</label><br>
 		<input style="width: 50ch;" type="email" id="email" name="email" required>
 	</p>
+	<p>
+		<label for="fullName">Full name:</label><br>
+		<input style="width: 50ch;" type="text" id="fullName" name="fullName" required>
+	</p>
 	<button type="submit" class="btn">
-		Login
+		Register
 	</button>
 </form>
 {include shared_bottom.tpl.html}

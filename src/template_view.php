@@ -4,9 +4,11 @@ class TemplateView
 {
     private string $compiledTemplatesFolder;
     private array $storedArgs = [];
+	private ComponentManager $componentManager;
 
 	public function __construct(ComponentManager $componentManager, string $compiledTemplatesFolder)
 	{
+		$this->componentManager = $componentManager;
 		$this->compiledTemplatesFolder = $compiledTemplatesFolder;
 	}
 
@@ -29,6 +31,6 @@ class TemplateView
 			${$arg} = $value;
 		}
 		include($this->compiledTemplatesFolder.$escapedTemplateName.".php");
-		exit(0);
+		$this->componentManager->getByName("shutdown_manager")->shutdown();
 	}
 }

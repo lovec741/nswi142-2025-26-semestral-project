@@ -2,5 +2,6 @@
 # Never commit compilation (by-)products and machine-specific settings.        #
 ################################################################################
 .*
+!.env.example
 !.gitignore
 !.gitattributes

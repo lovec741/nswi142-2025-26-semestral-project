@@ -1,3 +1,4 @@
+<form method="POST" action="/logout" id="logout-form"></form>
 <header class="container">
 	<nav class="navbar">
 		<a href="/" class="lead navbar-icon-link">
@@ -20,10 +21,11 @@
 		{/if}
 		{if !$loggedIn}
 			<a href="/login" class="{if $path === '/login'}active{/if} start-right-navbar-section">Login</a>
+			<a href="/register" class="{if $path === '/register'}active{/if}">Register</a>
 		{/if}
 		{if $loggedIn}
 			<a href="/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
-			<a href="/logout" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" src="/static/img/logout.svg"></a>
+			<a href="#" onclick="document.getElementById('logout-form').submit()" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" src="/static/img/logout.svg"></a>
 		{/if}
 	</nav>
 </header>

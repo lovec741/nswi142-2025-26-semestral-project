@@ -32,4 +32,19 @@ class ComponentManager {
 			}
 		}
 	}
+
+	/**
+	 * @template T
+	 * @param class-string<T> $class
+	 * @return array<T>
+	 */
+	public function getAllByClass($class) {
+		$result = [];
+		foreach($this->components as $component) {
+			if ($component instanceof $class) {
+				array_push($result, $component);
+			}
+		}
+		return $result;
+	}
 }

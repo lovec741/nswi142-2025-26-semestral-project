@@ -1,0 +1,17 @@
+<div id="flash-messages-cont" class="container flash-message-container">
+{foreach $flashMessages as $flashMessage}
+	<div class="flash-message {= $flashMessage['type'] }">
+		{= $flashMessage['text'] }
+	</div>
+{/foreach}
+</div>
+
+<script>
+	(() => {
+		const flashMessagesCont = document.getElementById("flash-messages-cont");
+
+		setInterval(() => {
+			flashMessagesCont.style.display = "none";
+		}, 5000);
+	})()
+</script>

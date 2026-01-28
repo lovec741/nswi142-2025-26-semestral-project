@@ -1,5 +1,6 @@
 <?php
 
+define("ENV_FILE", __DIR__."/../.env");
 define("TEMPLATES_DIR", __DIR__."/../templates/");
-define("COMPILED_TEMPLATES_DIR", __DIR__."/../public/compiled_templates/");
+define("COMPILED_TEMPLATES_DIR", __DIR__."/../compiled_templates/");
 define("EVENTS_PER_PAGE", 7);
