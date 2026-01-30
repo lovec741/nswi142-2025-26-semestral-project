@@ -1,0 +1,29 @@
+{include shared_top.tpl.html}
+<h1>Welcome to EventHorizon!</h1>
+<p>We are the leading platform when it comes to event reservation systems.</p>
+<div class="count-display-container">
+	<div class="count-display one">
+		<span>We have</span>
+		<span class="big-number">{= $eventsCount}</span>
+		<span>created events</span>
+		<span class="margin-top-md">and counting!</span>
+	</div>
+	<div class="count-display two">
+		<span>There are</span>
+		<span class="big-number">{= $usersCount}</span>
+		<span>users</span>
+		<span class="margin-top-md">and they keep coming!</span>
+	</div>
+	<div class="count-display three">
+		<span>Our users made</span>
+		<span class="big-number">{= $eventRegistrationsCount}</span>
+		<span>event registrations</span>
+		<span class="margin-top-md">and its growing!</span>
+	</div>
+</div>
+
+{if count($events) > 0}
+<h3>Here are the latest events that have been added:</h3>
+{include events_display_part.tpl.html}
+{/if}
+{include shared_bottom.tpl.html}

@@ -12,6 +12,7 @@ header {
     background-color: black;
     position: sticky;
     top: 0;
+	z-index: 1000;
 }
 
 footer {
@@ -167,6 +168,10 @@ button.btn {
 	border-style: none;
 }
 
+button.btn-sm {
+    padding: 0.25rem 0.5rem;
+}
+
 button.btn:hover {
     background: darkgray;
 }
@@ -219,6 +224,18 @@ button.btn:active {
 	margin-top: 2rem;
 }
 
+.margin-bottom-sm {
+	margin-bottom: 0.5rem;
+}
+
+.margin-bottom-md {
+	margin-bottom: 1rem;
+}
+
+.margin-bottom-lg {
+	margin-bottom: 2rem;
+}
+
 /* IMGS */
 .centered-img {
     display: block;
@@ -267,6 +284,105 @@ button.btn:active {
 }
 
 /* FORMS */
-form input:not([type="checkbox"]) {
+form input:not([type="checkbox"]), form textarea {
 	width: 100%;
+}
+
+.workshop-container {
+	display: flex;
+	gap: 0.5rem;
+	flex-direction: column;
+	margin-bottom: 0.5rem;
+}
+
+.inner-workshop-container {
+	display: flex;
+	gap: 0.5rem;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.inner-workshop-container > :nth-child(2) {
+	flex: 0 0 auto;
+}
+
+/* COUNT DISPLAYS */
+.count-display-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	gap: 1rem;
+}
+
+.count-display {
+	flex: 1 1 0px;
+	font-size: 1.5rem;
+	padding: 1rem;
+	border-radius: 5px;
+	border: 4px solid gray;
+	animation-duration: 1.5s;
+	animation-timing-function: ease-out;
+	animation-fill-mode: both;
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	text-align: center;
+	justify-content: space-around;
+}
+
+@keyframes countDisplayAnim {
+	from {opacity: 0; transform: scale(0);}
+	to {opacity: 1; transform: scale(1);}
+}
+
+.count-display.one {
+	animation-name: countDisplayAnim;
+}
+
+.count-display.two {
+	animation-name: countDisplayAnim;
+	animation-delay: 0.5s;
+}
+
+.count-display.three {
+	animation-name: countDisplayAnim;
+	animation-delay: 1s;
+}
+
+.big-number {
+	font-size: 3rem;
+	font-weight: bold;
+}
+
+/* EVENT DISPLAYS */
+.event-display-container {
+	display: flex;
+	flex-direction: row;
+	justify-content: start;
+	align-items: stretch;
+	gap: 1rem;
+	flex-wrap: wrap;
+}
+
+.event-display {
+	flex: 1 1 27%;
+	font-size: 1rem;
+	padding: 1rem;
+	border-radius: 5px;
+	border: 1px solid gray;
+	display: flex;
+	align-items: start;
+	flex-direction: column;
+	justify-content: start;
+	max-width: 29%;
+	min-width: 200px;
+}
+
+.event-display > :first-child {
+	font-size: 1.5rem;
+}
+
+.event-display > .btn-link {
+	margin-left: auto;
+	margin-top: auto;
+	padding: 0.5rem 2rem;
 }

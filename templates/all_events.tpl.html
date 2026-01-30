@@ -1,0 +1,9 @@
+{include shared_top.tpl.html}
+<h1 class="margin-bottom-lg">All Events</h1>
+{if count($events) > 0}
+{include events_display_part.tpl.html}
+{/if}
+{if count($events) === 0}
+<p>There are currently no events!</p>
+{/if}
+{include shared_bottom.tpl.html}

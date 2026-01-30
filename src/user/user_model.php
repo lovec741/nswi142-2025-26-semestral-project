@@ -65,7 +65,7 @@ class UserModel implements Model {
 		if ($result->num_rows === 0)
 			return false;
 
-		$row = mysqli_fetch_array($result);
+		$row = mysqli_fetch_assoc($result);
 		$this->userId = $userId;
 		$this->email = $row["email"];
 		$this->fullName = $row["full_name"];
@@ -89,11 +89,20 @@ class UserModel implements Model {
 		if ($result->num_rows === 0)
 			return false;
 
-		$row = mysqli_fetch_array($result);
+		$row = mysqli_fetch_assoc($result);
 		$this->userId = $row["user_id"];
 		$this->email = $email;
 		$this->fullName = $row["full_name"];
 		return true;
+	}
+
+	public function countUsers(): int {
+		$result = $this->componentManager->getByName("db_manager")->staticQuery("
+			SELECT COUNT(*) FROM users
+		");
+
+		$row = mysqli_fetch_array($result, MYSQLI_NUM);
+		return $row[0];
 	}
 
 	public function getEmail(): ?string {

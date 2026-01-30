@@ -1,0 +1,12 @@
+<div class="event-display-container">
+	{foreach $events as $event}
+		<div class="event-display">
+			<b>{= $event['name']}</b>
+
+			<span><b>Start date:</b> {= $event['start_date']}</span>
+			<span><b>End date:</b> {= $event['end_date']}</span>
+			<span><b>Organizer:</b> {= $event['owner_full_name']}</span>
+			<a class="btn-link" href="/events/{= $event['event_id']}">→</a>
+		</div>
+	{/foreach}
+</div>

@@ -14,15 +14,19 @@ require_once __DIR__ . '/events/events_presenter.php';
 require_once __DIR__ . '/events/events_model.php';
 require_once __DIR__ . '/flash_message_presenter.php';
 
-// load config
-// setup component manager with all of the components (presenters, models and the router)
-// start front controller
-
 $configFile = parse_ini_file(ENV_FILE, true);
 
 $routes = [
 	"/" => [
-		"GET" => ["events.presenter", "showLandingPage"]
+		"GET" => ["events.presenter", "showLanding"]
+	],
+	"/events" => [
+
+		"GET" => ["events.presenter", "showAllEvents"]
+	],
+	"/events/new" => [
+		"GET" => ["events.presenter", "showCreateEvent"],
+		"POST" => ["events.presenter", "processCreateEvent"]
 	],
 	"/tos" => [
 		"GET" => ["user.presenter", "showTOS"]

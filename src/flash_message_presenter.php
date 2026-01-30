@@ -9,8 +9,8 @@ class FlashMessagePresenter {
 	}
 
 	public function getFlashMessageArgs() {
-		$session_manager = $this->componentManager->getByName("session_manager");
-		$flashMessages = $session_manager->getFlashMessages();
+		$sessionManager = $this->componentManager->getByName("session_manager");
+		$flashMessages = $sessionManager->getFlashMessages();
 		$args = [
 			"flashMessages" => $flashMessages
 		];

@@ -63,7 +63,7 @@ class EventsModel implements Model {
 		");
 	}
 
-	public function createNewEvent(int $ownerUserId, string $name, string $description, string $startDate, string $endDate, string $heroImageName, array $workshops): int {
+	public function createEvent(int $ownerUserId, string $name, string $description, string $startDate, string $endDate, string $heroImageName, array $workshops): int {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		$dbManager->dynamicQuery("
 			INSERT INTO events
@@ -85,5 +85,196 @@ class EventsModel implements Model {
 		return $eventId;
 	}
 
+	public function createEventRegistration(int $userId, int $eventId, array $workshopIds): int {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$dbManager->dynamicQuery("
+			INSERT INTO event_registrations
+			(user_id, event_id) VALUES (?, ?)
+		", "ii", $userId, $eventId);
+		$result = $dbManager->staticQuery("
+			SELECT LAST_INSERT_ID();
+		");
+		if (!$result)
+			return false;
+		$row = mysqli_fetch_array($result);
+		$registrationId = $row[0];
+		foreach ($workshopIds as $workshopId) {
+			$dbManager->dynamicQuery("
+				INSERT INTO event_registration_workshops
+				(registration_id, workshop_id) VALUES (?, ?)
+			", "ii", $registrationId, $workshopId);
+		}
+		return $registrationId;
+	}
 
+	public function updateEvent(int $eventId, string $name, string $description, string $startDate, string $endDate, string $heroImageName, array $removeWorkshopIds, array $newWorkshops) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$dbManager->dynamicQuery("
+			UPDATE events
+			SET name = ?, description = ?, start_date = ?, end_date = ?, hero_img_name = ?
+			WHERE event_id = ?
+		", "sssssi", $name, $description, $startDate, $endDate, $heroImageName, $eventId);
+
+		foreach ($removeWorkshopIds as $removeWorkshopId) {
+			$dbManager->dynamicQuery("
+				DELETE FROM event_workshops
+				WHERE workshop_id = ?
+			", "ii", $removeWorkshopId);
+		}
+		foreach ($newWorkshops as $workshop) {
+			$dbManager->dynamicQuery("
+				INSERT INTO event_workshops
+				(event_id, name) VALUES (?, ?)
+			", "is", $eventId, $workshop);
+		}
+	}
+
+	public function deleteEvent(int $eventId) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$dbManager->dynamicQuery("
+			DELETE FROM events
+			WHERE event_id = ?
+		", "i", $eventId);
+	}
+
+	private function getRegistrationId(int $userId, int $eventId): int {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT event_id FROM event_registrations
+			(user_id, event_id) VALUES (?, ?)
+		", "ii", $userId, $eventId);
+		$row = mysqli_fetch_array($result);
+		return $row[0];
+	}
+
+	public function updateEventRegistration(int $userId, int $eventId, array $selectedWorkshopIds) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$registrationId = $this->getRegistrationId($userId, $eventId);
+		$result = $dbManager->dynamicQuery("
+			SELECT workshop_id FROM event_registration_workshops
+			WHERE registration_id = ?
+		", "i", $registrationId);
+		$rows = mysqli_fetch_all($result, MYSQLI_NUM);
+
+		$previoslySelectedWorkshopIds = array_map(function ($x) {return $x[0];}, $rows);
+		$newlySelectedWorkshop = array_diff($selectedWorkshopIds, $previoslySelectedWorkshopIds);
+		$newlyUnselectedWorkshop = array_diff($previoslySelectedWorkshopIds, $selectedWorkshopIds);
+
+		foreach ($newlyUnselectedWorkshop as $removeWorkshopId) {
+			$dbManager->dynamicQuery("
+				DELETE FROM event_registration_workshops
+				WHERE registration_id = ? AND workshop_id = ?
+			", "ii", $registrationId, $removeWorkshopId);
+		}
+		foreach ($newlySelectedWorkshop as $workshopId) {
+			$dbManager->dynamicQuery("
+				INSERT INTO event_registration_workshops
+				(registration_id, workshop_id) VALUES (?, ?)
+			", "ii", $registrationId, $workshopId);
+		}
+	}
+
+	public function deleteEventRegistration(int $userId, int $eventId) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$registrationId = $this->getRegistrationId($userId, $eventId);
+		$dbManager->dynamicQuery("
+			DELETE FROM event_registration_workshops
+			WHERE registration_id = ?
+		", "i", $registrationId);
+	}
+
+	public function getAllEventsAndOwnerNames(?int $onlyNewestX = null): array {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		if ($onlyNewestX === null) {
+			$result = $dbManager->staticQuery("
+				SELECT event_id, full_name as owner_full_name, name, start_date, end_date FROM events
+					INNER JOIN users ON owner_user_id = user_id
+			");
+		} else {
+			$result = $dbManager->dynamicQuery("
+				SELECT event_id, full_name as owner_full_name, name, start_date, end_date FROM events
+					INNER JOIN users ON owner_user_id = user_id
+					ORDER BY event_id DESC
+					LIMIT ?
+			", "i", $onlyNewestX);
+		}
+		$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+		return $rows;
+	}
+
+	public function getEventDetails(int $eventId): array {
+		$dbManager = $this->componentManager->getByName("db_manager");
+
+		$result = $dbManager->dynamicQuery("
+			SELECT owner_user_id, full_name as owner_full_name, name, description, start_date, end_date, hero_img_name FROM events
+				INNER JOIN users ON owner_user_id = user_id
+				WHERE event_id = ?
+		", "i", $eventId);
+		$eventDetails = mysqli_fetch_assoc($result);
+		$result = $dbManager->dynamicQuery("
+			SELECT workshop_id, name FROM event_workshops
+				WHERE event_id = ?
+		", "i", $eventId);
+		$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+		$workshops = array_map(function ($x) {return $x[0];}, $rows);
+		$eventDetails["workshops"] = $workshops;
+		return $eventDetails;
+	}
+
+	public function isUserRegisteredToEvent(int $userId, int $eventId): bool {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT 1 FROM event_registrations
+				WHERE user_id = ? AND event_id = ?
+		", "ii", $userId, $eventId);
+		return $result->num_rows !== 0;
+	}
+
+	public function getAllEventsUserIsRegisteredFor(int $userId): array {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT event_id, name, description, start_date, end_date, hero_img_name FROM events
+				INNER JOIN event_registrations ON events.event_id = event_registrations.event_id AND user_id = ?
+		", "i", $userId);
+		$eventsDetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
+		foreach ($eventsDetails as $eventDetails) {
+			$result = $dbManager->dynamicQuery("
+				SELECT workshop_id, name FROM event_workshops
+					INNER JOIN event_registration_workshops ON event_workshops.workshop_id = event_registration_workshops.workshop_id
+					INNER JOIN event_registrations ON event_registration_workshops.event_id = event_registrations.event_id
+						AND user_id = ? AND event_id = ?
+			", "ii", $userId, $eventDetails["event_id"]);
+			$workshops = mysqli_fetch_all($result, MYSQLI_ASSOC);
+			$eventDetails["workshops"] = $workshops;
+		}
+		return $eventsDetails;
+	}
+
+	public function getAllEventsUserOwns(int $userId): array {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT event_id, name, description, start_date, end_date, hero_img_name FROM events
+				WHERE owner_user_id = ?
+		", "i", $userId);
+		$eventsDetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
+		return $eventsDetails;
+	}
+
+	public function countEvents(): int {
+		$result = $this->componentManager->getByName("db_manager")->staticQuery("
+			SELECT COUNT(*) FROM events
+		");
+
+		$row = mysqli_fetch_array($result, MYSQLI_NUM);
+		return $row[0];
+	}
+
+	public function countEventRegistrations(): int {
+		$result = $this->componentManager->getByName("db_manager")->staticQuery("
+			SELECT COUNT(*) FROM event_registrations
+		");
+
+		$row = mysqli_fetch_array($result, MYSQLI_NUM);
+		return $row[0];
+	}
 }
