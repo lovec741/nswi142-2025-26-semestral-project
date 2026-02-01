@@ -28,10 +28,10 @@ foreach ($demoUsers as $demoUser) {
 
 $demoEvents = [
     [
-        'TechConf Fake 2026',
+        'TechConf Fake 2025',
         'A completely made-up conference about nothing important',
-        '2026-03-15',
-        '2026-03-17',
+        '2025-03-15',
+        '2025-03-17',
         1,
         [
             'Unit Testing for Dummies',
@@ -41,8 +41,8 @@ $demoEvents = [
     [
         'WebDev Nonsense Summit',
         'Learn fake web development from fake experts',
-        '2026-04-10',
-        '2026-04-12',
+        '2025-04-10',
+        '2025-04-12',
         2,
         [
             'CSS is not Programming',
