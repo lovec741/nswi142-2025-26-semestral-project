@@ -1,0 +1,33 @@
+{include shared_top.tpl.html}
+<h1 class="margin-bottom-lg">Edit Event Registration</h1>
+<div class="event-details-display">
+	<b>{= $event['name']}</b>
+	<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
+	<span><b>Description:</b></span>
+	<span>{= $event['description']}</span>
+	<span><b>Start date:</b> {= $event['start_date']}</span>
+	<span><b>End date:</b> {= $event['end_date']}</span>
+	<span><b>Organizer:</b> {= $event['owner_full_name']}</span>
+	<span><b>Select workshops you want to attend:</b></span>
+	<form method="post">
+		<ul>
+			{foreach $event['workshops'] as $workshop}
+				<li>
+					<input type="checkbox" id="workshop{= $workshop['workshop_id']}" name="workshop[]" value="{= $workshop['workshop_id']}" {if in_array($workshop['workshop_id'], $event['registeredWorkshopIds']) }checked{/if}>
+					<label for="workshop{= $workshop['workshop_id']}">{= $workshop['name']}</label>
+				</li>
+			{/foreach}
+		</ul>
+		<button type="submit" class="btn margin-top-md">
+			Edit Registration
+		</button>
+	</form>
+
+	<form action="/events/{= $event['event_id']}/register/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel the reservation to \'{= $event['name']}\'?');">
+		<button type="submit" class="btn margin-top-lg btn-danger">
+			Cancel Registration
+		</button>
+	</form>
+</div>
+
+{include shared_bottom.tpl.html}

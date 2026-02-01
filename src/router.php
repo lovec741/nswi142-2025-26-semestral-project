@@ -2,14 +2,12 @@
 
 class Router {
 	private array $routes;
-	private array $beforeRequestCallbacks;
 	private ComponentManager $componentManager;
 
-	public function __construct(ComponentManager $componentManager, array $routes, array $sharedTemplateArgsCallbacks)
+	public function __construct(ComponentManager $componentManager, array $routes)
 	{
 		$this->componentManager = $componentManager;
 		$this->routes = $routes;
-		$this->beforeRequestCallbacks = $sharedTemplateArgsCallbacks;
 	}
 
 	private function matchPath(string $requestPath, string $matchPath): ?array {
@@ -23,23 +21,18 @@ class Router {
 	}
 
 	public function handleRequest() {
-		$templateView = $this->componentManager->getByName("template_view");
+		$templateView = $this->componentManager->getByClass(TemplateView::class);
 		$requestPath = $_SERVER['PATH_INFO'] ?? "/";
 		$requestMethod = $_SERVER['REQUEST_METHOD'];
-		foreach ($this->beforeRequestCallbacks as $beforeRequestCallback) {
-			[$presenterName, $methodName] = $beforeRequestCallback;
-			$presenter = $this->componentManager->getByName($presenterName);
-			$templateView->addStoredArgs($presenter->$methodName());
-		}
 
 		$matchedPath = null;
 		$pathArgs = null;
+		// NOTE: this is not performant in the slightest, but in our small webapp it will work just fine
 		foreach ($this->routes as $matchPath => $_) {
 			$result = $this->matchPath($requestPath, $matchPath);
-			if ($result !== null) {
+			if ($result !== null && ($pathArgs === null || count($result) < count($pathArgs))) { // we want the most specific match = with the least placeholders
 				$matchedPath = $matchPath;
 				$pathArgs = $result;
-				break;
 			}
 		}
 		if ($matchedPath === null) {
@@ -58,7 +51,7 @@ class Router {
 		$args = [...$pathArgs];
 		try {
 			if ($requestMethod === "POST") {
-				array_push($args, $_POST, $_GET);
+				array_push($args, $_POST, $_GET, $_FILES);
 				$presenter->$methodName(...$args);
 			} else {
 				array_push($args, $_GET);

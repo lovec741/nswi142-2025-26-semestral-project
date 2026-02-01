@@ -1,0 +1,72 @@
+{include shared_top.tpl.html}
+<h1 class="margin-bottom-lg">My Events</h1>
+<h2 class="margin-bottom-none margin-top-none">Registered For:</h2>
+{if count($registeredEvents) > 0}
+<div class="event-display-container margin-top-md">
+	{foreach $registeredEvents as $event}
+		<div class="event-details-display">
+			<b>{= $event['name']}</b>
+			<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
+			<span><b>Description:</b></span>
+			<span>{= $event['description']}</span>
+			<span><b>Start date:</b> {= $event['start_date']}</span>
+			<span><b>End date:</b> {= $event['end_date']}</span>
+			<span><b>Organizer:</b> {= $event['owner_full_name']}</span>
+			{if count($event['workshops']) > 0}
+			<span><b>Your Workshops:</b></span>
+			<ul>
+				{foreach $event['workshops'] as $workshop}
+					<li>{= $workshop['name']}</li>
+				{/foreach}
+			</ul>
+			{/if}
+			{if count($event['workshops']) === 0}
+			<span><b>You Aren't Registered For Any Workshops!</b></span>
+			{/if}
+			<div class="links-display">
+				<a class="btn-link" href="/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+			</div>
+		</div>
+	{/foreach}
+</div>
+{/if}
+{if count($registeredEvents) === 0}
+<p>There are currently no events you are registered for!</p>
+<div class="btn-cont">
+	<a href="/events" class="btn-link btn-link-sm">See All Events Here →</a>
+</div>
+{/if}
+
+<h2 class="margin-bottom-none margin-top-lg">Created By You:</h2>
+{if count($ownedEvents) > 0}
+<div class="event-display-container margin-top-md">
+	{foreach $ownedEvents as $event}
+		<div class="event-details-display">
+			<b>{= $event['name']}</b>
+			<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
+			<span><b>Description:</b></span>
+			<span>{= $event['description']}</span>
+			<span><b>Start date:</b> {= $event['start_date']}</span>
+			<span><b>End date:</b> {= $event['end_date']}</span>
+			<span><b>Organizer:</b> {= $event['owner_full_name']}</span>
+			<span><b>Workshops:</b></span>
+			<ul>
+				{foreach $event['workshops'] as $workshop}
+					<li>{= $workshop['name']}</li>
+				{/foreach}
+			</ul>
+			<div class="links-display">
+				<a class="btn-link" href="/events/{= $event['event_id']}/edit">Edit →</a>
+			</div>
+		</div>
+	{/foreach}
+</div>
+{/if}
+{if count($ownedEvents) === 0}
+<p>You haven't created any events yet!</p>
+<div class="btn-cont">
+	<a href="/events/new" class="btn-link btn-link-sm">Create an Event Here →</a>
+</div>
+{/if}
+
+{include shared_bottom.tpl.html}

@@ -1,0 +1,35 @@
+{include shared_top.tpl.html}
+<h1 class="margin-bottom-lg">Event Details</h1>
+<div>
+	<div class="event-details-display">
+		<b>{= $event['name']}</b>
+		<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
+		<span><b>Description:</b></span>
+		<span>{= $event['description']}</span>
+		<span><b>Start date:</b> {= $event['start_date']}</span>
+		<span><b>End date:</b> {= $event['end_date']}</span>
+		<span><b>Organizer:</b> {= $event['owner_full_name']}</span>
+		<span><b>Workshops:</b></span>
+		<ul>
+			{foreach $event['workshops'] as $workshop}
+				<li>{= $workshop['name']}</li>
+			{/foreach}
+		</ul>
+		{if $isLoggedIn}
+			<div class="links-display">
+				{if $isEventOwner}
+					<a class="btn-link" href="/events/{= $event['event_id']}/edit">Edit →</a>
+				{/if}
+				{if !$isEventOwner}
+					{if !$isRegisteredToEvent}
+						<a class="btn-link" href="/events/{= $event['event_id']}/register">Register →</a>
+					{/if}
+					{if $isRegisteredToEvent}
+						<a class="btn-link" href="/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+					{/if}
+				{/if}
+			</div>
+		{/if}
+	</div>
+</div>
+{include shared_bottom.tpl.html}

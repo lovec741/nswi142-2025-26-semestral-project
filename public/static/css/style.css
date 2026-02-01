@@ -21,6 +21,9 @@ footer {
 	margin-top: auto !important;
 }
 
+ul {
+	margin: 0;
+}
 
 .navbar {
     display: flex;
@@ -46,9 +49,14 @@ footer {
     font-weight: bold;
 }
 
+
 .navbar > a.active {
     color: white;
+}
+
+.navbar > a.active:not(.lead) {
     text-decoration: underline;
+	text-underline-offset: 2px;
 }
 
 .start-right-navbar-section {
@@ -168,7 +176,7 @@ button.btn {
 	border-style: none;
 }
 
-button.btn-sm {
+button.btn-sm, .btn-link-sm {
     padding: 0.25rem 0.5rem;
 }
 
@@ -180,6 +188,19 @@ button.btn:hover {
 button.btn:active {
     background: lightgray;
 }
+
+button.btn-danger {
+    background: red;
+}
+
+button.btn-danger:hover {
+    background: rgb(201, 0, 0);
+}
+
+button.btn-danger:active {
+    background: rgb(167, 0, 0);
+}
+
 
 /* CONTENTS */
 .contents {
@@ -212,6 +233,10 @@ button.btn:active {
     padding: 0.5rem;
 }
 
+.margin-top-none {
+	margin-top: 0;
+}
+
 .margin-top-sm {
 	margin-top: 0.5rem;
 }
@@ -222,6 +247,10 @@ button.btn:active {
 
 .margin-top-lg {
 	margin-top: 2rem;
+}
+
+.margin-bottom-none {
+	margin-bottom: 0;
 }
 
 .margin-bottom-sm {
@@ -236,6 +265,10 @@ button.btn:active {
 	margin-bottom: 2rem;
 }
 
+.margin-bottom-xl {
+	margin-bottom: 4rem;
+}
+
 /* IMGS */
 .centered-img {
     display: block;
@@ -244,10 +277,19 @@ button.btn:active {
     object-fit: contain;
 }
 
-#title_img {
-    height: 200px;
-    margin-bottom: 1rem;
+.hero-img {
+    height: 300px;
+    margin: 1rem 0;
     border-radius: 10px;
+}
+
+@media (width <= 600px) {
+    .hero-img {
+        height: auto;
+		max-height: 300px;
+		width: 100%;
+		object-fit: cover;
+    }
 }
 
 /* FLASH MESSAGES */
@@ -256,21 +298,43 @@ button.btn:active {
 	top: 4.5rem;
 	gap: 1rem;
 	padding: 0 2rem;
-	pointer-events: none
+	pointer-events: none;
+	z-index: 1001;
+	box-sizing: border-box;
+}
+
+@keyframes flashMessageAnimShow {
+	from {opacity: 0; transform: scale(0);}
+	to {opacity: 1; transform: scale(1);}
+}
+
+@keyframes flashMessageAnimHide {
+	from {opacity: 1; transform: scale(1);}
+	to {opacity: 0; transform: scale(0);}
 }
 
 .flash-message {
+	animation-fill-mode: both;
+	animation-duration: 0.3s;
+	animation-timing-function: ease-out;
+	animation-name: flashMessageAnimShow;
 	max-width: 800px;
 	border: 1px solid black;
 	border-radius: 5px;
 	padding: 1rem;
 	opacity: 0.95;
 	pointer-events: all;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.flash-message:hover {
+	transform: scale(1.1);
 }
 
 .flash-message.success {
 	background-color: rgb(85, 230, 85);
-	color: rgb(255, 255, 255);
+	color: white;
 }
 
 .flash-message.warn {
@@ -280,7 +344,7 @@ button.btn:active {
 
 .flash-message.error {
 	background-color: red;
-	color: rgb(70, 70, 70);
+	color: white;
 }
 
 /* FORMS */
@@ -305,12 +369,23 @@ form input:not([type="checkbox"]), form textarea {
 	flex: 0 0 auto;
 }
 
+.narrow-form {
+	width: 50ch;
+}
+
+@media (width <= 600px) {
+    .narrow-form {
+        width: 100%;
+    }
+}
+
 /* COUNT DISPLAYS */
 .count-display-container {
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
 	gap: 1rem;
+	flex-wrap: wrap;
 }
 
 .count-display {
@@ -327,6 +402,7 @@ form input:not([type="checkbox"]), form textarea {
 	flex-direction: column;
 	text-align: center;
 	justify-content: space-around;
+	min-width: 200px;
 }
 
 @keyframes countDisplayAnim {
@@ -385,4 +461,28 @@ form input:not([type="checkbox"]), form textarea {
 	margin-left: auto;
 	margin-top: auto;
 	padding: 0.5rem 2rem;
+}
+
+.event-details-display {
+	font-size: 1rem;
+	padding: 1rem;
+	border-radius: 5px;
+	border: 1px solid gray;
+	display: flex;
+	align-items: start;
+	flex-direction: column;
+	justify-content: start;
+}
+
+.event-details-display > :first-child {
+	font-size: 1.5rem;
+}
+
+.event-details-display > .links-display {
+	margin-left: auto;
+	margin-top: 1rem;
+}
+
+.event-display-container .event-details-display {
+	width: 100%;
 }

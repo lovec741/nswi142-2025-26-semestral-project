@@ -1,7 +1,7 @@
 <form method="POST" action="/logout" id="logout-form"></form>
 <header class="container">
 	<nav class="navbar">
-		<a href="/" class="lead navbar-icon-link">
+		<a href="/" class="{if $path === '/'}active{/if} lead navbar-icon-link ">
 			<img class="navbar-icon-img" src="/static/img/calendar.svg">
 			EventHorizon
 		</a>
@@ -9,7 +9,7 @@
 			<img class="navbar-icon-img" src="/static/img/globe.svg">
 			All events
 		</a>
-		{if $loggedIn}
+		{if $isLoggedIn}
 			<a href="/events/mine" class="{if $path === '/events/mine'}active{/if} navbar-icon-link">
 				<img class="navbar-icon-img" src="/static/img/star.svg">
 				My events
@@ -19,11 +19,11 @@
 				Create Event
 			</a>
 		{/if}
-		{if !$loggedIn}
+		{if !$isLoggedIn}
 			<a href="/login" class="{if $path === '/login'}active{/if} start-right-navbar-section">Login</a>
 			<a href="/register" class="{if $path === '/register'}active{/if}">Register</a>
 		{/if}
-		{if $loggedIn}
+		{if $isLoggedIn}
 			<a href="/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
 			<a href="#" onclick="document.getElementById('logout-form').submit()" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" src="/static/img/logout.svg"></a>
 		{/if}

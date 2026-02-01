@@ -25,7 +25,13 @@ class UserModel implements Model {
 		");
 	}
 
-	public function createNewUserAndLoad($email, $fullName, $password) {
+	public function dropTables() {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$dbManager->staticQuery("SET FOREIGN_KEY_CHECKS = 0;");
+		$dbManager->staticQuery("TRUNCATE users;");
+	}
+
+	public function createNewUser($email, $fullName, $password) {
 		$this->componentManager->getByName("db_manager")->dynamicQuery("
 			INSERT INTO users
 			(email, full_name, password) VALUES (?, ?, ?)
@@ -56,7 +62,11 @@ class UserModel implements Model {
 		", "i", $this->userId);
 	}
 
-	public function loadUserFromId(int $userId): bool {
+	private function loadFromSession(): bool {
+		$userId = $this->getUserIdFromSession();
+		if ($userId === null) {
+			return false;
+		}
 		$result = $this->componentManager->getByName("db_manager")->dynamicQuery("
 			SELECT email, full_name FROM users
 			WHERE user_id = ?
@@ -80,7 +90,7 @@ class UserModel implements Model {
 		return $result->num_rows !== 0;
 	}
 
-	public function loadUserFromEmail(string $email): bool {
+	public function loginUserByEmail(string $email): bool {
 		$result = $this->componentManager->getByName("db_manager")->dynamicQuery("
 			SELECT user_id, full_name FROM users
 			WHERE email = ?
@@ -93,6 +103,8 @@ class UserModel implements Model {
 		$this->userId = $row["user_id"];
 		$this->email = $email;
 		$this->fullName = $row["full_name"];
+		$sessionManager = $this->componentManager->getByName("session_manager");
+		$sessionManager->set('USER_ID', $row["user_id"]);
 		return true;
 	}
 
@@ -106,14 +118,38 @@ class UserModel implements Model {
 	}
 
 	public function getEmail(): ?string {
+		if ($this->userId !== null) {
+			return $this->email;
+		}
+		$this->loadFromSession();
 		return $this->email;
 	}
 
 	public function getFullName(): ?string {
+		if ($this->userId !== null) {
+			return $this->fullName;
+		}
+		$this->loadFromSession();
 		return $this->fullName;
 	}
 
+	private function getUserIdFromSession(): ?int {
+		$sessionManager = $this->componentManager->getByName("session_manager");
+		return $sessionManager->get('USER_ID');
+	}
+
 	public function getUserId(): ?int {
-		return $this->userId;
+		if ($this->userId !== null) {
+			return $this->userId;
+		}
+		return $this->getUserIdFromSession();
+	}
+
+	public function logoutUser() {
+		unset($_SESSION['USER_ID']);
+	}
+
+	public function isLoggedIn(): bool {
+		return $this->getUserId() !== null;
 	}
 }

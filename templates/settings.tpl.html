@@ -1,7 +1,7 @@
 {include shared_top.tpl.html}
 <h1>User settings</h1>
-<form action="/settings" method="post">
-	<div style="width: 50ch;">
+<form method="post">
+	<div class="narrow-form">
 		<p>
 			<label>E-mail:</label><br>
 			<input type="text" disabled value="{= $email }"><br>
@@ -24,8 +24,8 @@
 
 <h2 class="margin-top-lg">Danger zone</h2>
 <form action="/settings/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete your account?');">
-	<button type="submit" class="btn" style="background-color: red;">
-		Delete account
+	<button type="submit" class="btn btn-danger">
+		Delete Account
 	</button>
 </form>
 {include shared_bottom.tpl.html}

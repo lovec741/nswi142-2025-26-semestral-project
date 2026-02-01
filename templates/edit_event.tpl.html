@@ -1,40 +1,54 @@
 {include shared_top.tpl.html}
-<h1>Create Event</h1>
+<h1>Edit Event</h1>
 <form method="post" enctype="multipart/form-data">
 	<div class="narrow-form">
 		<p>
 			<label for="name">Name:</label><br>
-			<input type="text" id="name" name="name" maxlength="64" required>
+			<input type="text" id="name" name="name" maxlength="64" required value="{= $event['name']}">
 		</p>
 		<p>
 			<label for="description">Description:</label><br>
-			<textarea id="description" name="description" rows="6" maxlength="1024" required></textarea>
+			<textarea id="description" name="description" rows="6" maxlength="1024" required>{= $event['description']}</textarea>
 		</p>
 		<p>
 			<label for="startDate">Start date:</label><br>
-			<input type="date" id="startDate" name="startDate" required/><br>
+			<input type="date" id="startDate" name="startDate" required value="{= $event['start_date']}"/><br>
 			<small>Has to be in the future</small>
 		</p>
 		<p>
 			<label for="endDate">End date:</label><br>
-			<input type="date" id="endDate" name="endDate" required/><br>
+			<input type="date" id="endDate" name="endDate" required value="{= $event['end_date']}"/><br>
 			<small>Has to be in the future and the same day or later then the start date</small>
 		</p>
 		<p>
 			<label for="heroImage">Hero image:</label><br>
-			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg" required/>
+			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg"/>
+			<small>If nothing is uploaded then current image is kept.</small>
 		</p>
 		<div class="margin-top-md margin-bottom-md">
 			<label>Workshops:</label>
 			<div id="workshop-container" class="workshop-container">
-				<input type="text" name="workshop[]" required/>
+				{for $i = 0; $i < count($event['workshops']); $i++ }
+					<div class="inner-workshop-container">
+						<input type="text" name="updateWorkshop[{= $i}][name]" required value="{= $event['workshops'][$i]['name']}"/>
+						{if $i !== 0}<button type="button" class="btn btn-sm remove-existing-workshop-button">x Remove</button>{/if}
+						<input type="hidden" name="updateWorkshop[{= $i}][workshopId]" required value="{= $event['workshops'][$i]['workshop_id']}"/>
+					</div>
+				{/for}
 			</div>
 			<button type="button" class="btn" id="add-workshop-button">+ Add Workshop</button>
 		</div>
 		<button type="submit" class="btn">
-			Create Event
+			Edit Event
 		</button>
 	</div>
+</form>
+
+<h2 class="margin-top-lg">Danger zone</h2>
+<form action="/events/{= $event['event_id']}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the event named \'{= $event['name']}\'?');">
+	<button type="submit" class="btn btn-danger">
+		Delete Event
+	</button>
 </form>
 
 <script>
@@ -52,7 +66,7 @@
 		addWorkshopButtonEl.addEventListener("click", () => {
 			const newWorkshopInputEl = document.createElement("input");
 			newWorkshopInputEl.type = "text";
-			newWorkshopInputEl.name = "workshop[]";
+			newWorkshopInputEl.name = "addWorkshop[]";
 			newWorkshopInputEl.required = "required";
 			const newWorkshopRemoveButtonEl = document.createElement("button");
 			newWorkshopRemoveButtonEl.type = "button";
@@ -67,6 +81,21 @@
 			workshopContainerEl.appendChild(newWorkshopContainerDiv);
 		})
 
+		const removeExistingWorkshopButtonEls = document.getElementsByClassName('remove-existing-workshop-button');
+		for (const removeExistingWorkshopButtonEl of removeExistingWorkshopButtonEls) {
+			removeExistingWorkshopButtonEl.addEventListener("click", e => {
+				const workshopId = e.target.parentElement.querySelector('input[type="hidden"]').value;
+				e.target.parentElement.remove();
+
+				const removeWorkshopInputEl = document.createElement("input");
+				removeWorkshopInputEl.type = "hidden";
+				removeWorkshopInputEl.name = "removeWorkshopId[]";
+				removeWorkshopInputEl.required = "required";
+				removeWorkshopInputEl.value = workshopId;
+				workshopContainerEl.appendChild(removeWorkshopInputEl);
+
+			})
+		};
 	})()
 </script>
 {include shared_bottom.tpl.html}
