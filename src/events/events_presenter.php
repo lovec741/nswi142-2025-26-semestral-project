@@ -123,15 +123,21 @@ class EventsPresenter {
 		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("event_details", $args);
 	}
 
-	public function showMyEvents() {
+	public function showMyEvents($getArgs) {
 		$userPresenter = $this->componentManager->getByClass(UserPresenter::class);
 		$userModel = $userPresenter->getModelAndCheckIfLoggedIn();
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 		$registeredEvents = $eventsModel->getAllEventsUserIsRegisteredFor($userModel->getUserId());
 		$ownedEvents = $eventsModel->getAllEventsUserOwns($userModel->getUserId());
+		$showOldEvents = $getArgs['old'] ?? false;
+		if (!$showOldEvents) {
+			$registeredEvents = array_filter($registeredEvents, function($x) {return !$x['old'];});
+			$ownedEvents = array_filter($ownedEvents, function($x) {return !$x['old'];});
+		}
 		$args = [
 			"registeredEvents" => $registeredEvents,
-			"ownedEvents" => $ownedEvents
+			"ownedEvents" => $ownedEvents,
+			"showOldEvents" => $showOldEvents
 		];
 		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("my_events", $args);
 	}

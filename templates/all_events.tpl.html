@@ -1,7 +1,39 @@
-{include shared_top.tpl.html}
-<h1 class="margin-bottom-lg">All Events</h1>
+{include shared_top_before_head_end.tpl.html}
 {if count($events) > 0}
-{include events_display_part.tpl.html}
+<script>const EVENTS_PER_PAGE = {= EVENTS_PER_PAGE};</script>
+<script src="/static/js/all_events_pagination_and_sort.js"></script>
+{/if}
+{include shared_top_head_end.tpl.tpl.html}
+<h1 class="margin-bottom-lg">All Events</h1>
+
+{if count($events) > 0}
+	<div class="filters-cont margin-bottom-md">
+		<div>
+			<b>Sort by Start Date</b>
+			<button role="button" id="sort-start-date-asc" class="btn btn-sm">▲</button>
+			<button role="button" id="sort-start-date-desc" class="btn btn-sm">▼</button>
+		</div>
+
+		<div>
+			<input type="checkbox" id="hide-past"/>
+			<label for="hide-past"><b>Hide past events</b></label>
+		</div>
+	</div>
+	{include events_display_part.tpl.html}
+	<div class="margin-top-auto" >
+		<div class="filters-cont margin-top-lg">
+			<div>
+				<button role="button" id="page-prev" class="btn">◀</button>
+			</div>
+			<div>
+				<label for="hide-past"><b>Page <span id="page-number"></span></b></label>
+			</div>
+			<div>
+				<button role="button" id="page-next" class="btn">▶</button>
+			</div>
+		</div>
+	</div>
+	<div id="unused-event-displays-container"></div>
 {/if}
 {if count($events) === 0}
 <p>There are currently no events!</p>

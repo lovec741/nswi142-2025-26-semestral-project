@@ -83,6 +83,10 @@ ul {
     margin: 0;
 }
 
+main.container {
+	flex-grow: 1;
+}
+
 .container > * {
     margin-left: auto;
     margin-right: auto;
@@ -167,7 +171,7 @@ h1 {
     transition: 0.2s;
 }
 
-button.btn {
+.btn {
     border-radius: 5px;
     background: gray;
     color: white;
@@ -176,28 +180,32 @@ button.btn {
 	border-style: none;
 }
 
-button.btn-sm, .btn-link-sm {
+.btn:disabled {
+	background: rgb(201, 201, 201);
+}
+
+.btn-sm, .btn-link-sm {
     padding: 0.25rem 0.5rem;
 }
 
-button.btn:hover {
+.btn:hover:not(:disabled) {
     background: darkgray;
 }
 
 
-button.btn:active {
+.btn:active:not(:disabled) {
     background: lightgray;
 }
 
-button.btn-danger {
+.btn-danger {
     background: red;
 }
 
-button.btn-danger:hover {
+.btn-danger:hover {
     background: rgb(201, 0, 0);
 }
 
-button.btn-danger:active {
+.btn-danger:active {
     background: rgb(167, 0, 0);
 }
 
@@ -236,6 +244,11 @@ button.btn-danger:active {
 .margin-top-none {
 	margin-top: 0;
 }
+
+.margin-top-auto {
+	margin-top: auto;
+}
+
 
 .margin-top-sm {
 	margin-top: 0.5rem;
@@ -474,6 +487,11 @@ form input:not([type="checkbox"]), form textarea {
 	justify-content: start;
 }
 
+.event-details-display.old, .event-display.old	{
+	border: 1px solid rgb(179, 179, 179);
+	color: rgb(124, 124, 124);
+}
+
 .event-details-display > :first-child {
 	font-size: 1.5rem;
 }
@@ -485,4 +503,18 @@ form input:not([type="checkbox"]), form textarea {
 
 .event-display-container .event-details-display {
 	width: 100%;
+}
+
+#unused-event-displays-container {
+	display: none;
+}
+
+/* ALL EVENTS FILTERS */
+.filters-cont {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    justify-content: space-between;
+	align-items: center;
+	flex-wrap: wrap;
 }

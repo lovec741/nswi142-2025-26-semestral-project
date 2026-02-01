@@ -62,6 +62,11 @@ class UserModel implements Model {
 		", "i", $this->userId);
 	}
 
+	private function getUserIdFromSession(): ?int {
+		$sessionManager = $this->componentManager->getByName("session_manager");
+		return $sessionManager->get('USER_ID');
+	}
+
 	private function loadFromSession(): bool {
 		$userId = $this->getUserIdFromSession();
 		if ($userId === null) {
@@ -133,16 +138,12 @@ class UserModel implements Model {
 		return $this->fullName;
 	}
 
-	private function getUserIdFromSession(): ?int {
-		$sessionManager = $this->componentManager->getByName("session_manager");
-		return $sessionManager->get('USER_ID');
-	}
-
 	public function getUserId(): ?int {
 		if ($this->userId !== null) {
 			return $this->userId;
 		}
-		return $this->getUserIdFromSession();
+		$this->loadFromSession();
+		return $this->userId;
 	}
 
 	public function logoutUser() {

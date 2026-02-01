@@ -1,6 +1,6 @@
 <div class="event-display-container">
 	{foreach $events as $event}
-		<div class="event-display">
+		<div class="event-display {if $event['old']}old{/if}">
 			<b>{= $event['name']}</b>
 
 			<span><b>Start date:</b> {= $event['start_date']}</span>

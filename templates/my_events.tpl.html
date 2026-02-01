@@ -1,10 +1,18 @@
 {include shared_top.tpl.html}
-<h1 class="margin-bottom-lg">My Events</h1>
+<h1 class="margin-bottom-md">My Events</h1>
+<div class="margin-bottom-md">
+	{if !$showOldEvents}
+		<a class="btn-link" href="/events/mine?old=1">Show past events</a>
+	{/if}
+	{if $showOldEvents}
+		<a class="btn-link" href="/events/mine?old=0">Hide past events</a>
+	{/if}
+</div>
 <h2 class="margin-bottom-none margin-top-none">Registered For:</h2>
 {if count($registeredEvents) > 0}
 <div class="event-display-container margin-top-md">
 	{foreach $registeredEvents as $event}
-		<div class="event-details-display">
+		<div class="event-details-display {if $event['old']}old{/if}">
 			<b>{= $event['name']}</b>
 			<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
 			<span><b>Description:</b></span>
@@ -31,7 +39,12 @@
 </div>
 {/if}
 {if count($registeredEvents) === 0}
+{if !$showOldEvents}
+<p>There are no recents events you are registered for!</p>
+{/if}
+{if $showOldEvents}
 <p>There are currently no events you are registered for!</p>
+{/if}
 <div class="btn-cont">
 	<a href="/events" class="btn-link btn-link-sm">See All Events Here →</a>
 </div>
@@ -41,7 +54,7 @@
 {if count($ownedEvents) > 0}
 <div class="event-display-container margin-top-md">
 	{foreach $ownedEvents as $event}
-		<div class="event-details-display">
+		<div class="event-details-display {if $event['old']}old{/if}">
 			<b>{= $event['name']}</b>
 			<img class="hero-img" src="/data/{= $event['hero_img_name']}"/>
 			<span><b>Description:</b></span>
@@ -63,7 +76,12 @@
 </div>
 {/if}
 {if count($ownedEvents) === 0}
+{if !$showOldEvents}
+<p>You haven't created any events recently!</p>
+{/if}
+{if $showOldEvents}
 <p>You haven't created any events yet!</p>
+{/if}
 <div class="btn-cont">
 	<a href="/events/new" class="btn-link btn-link-sm">Create an Event Here →</a>
 </div>

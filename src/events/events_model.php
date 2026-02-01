@@ -272,9 +272,9 @@ class EventsModel implements Model {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		if ($onlyNewestX === null) {
 			$result = $dbManager->staticQuery("
-				SELECT event_id, full_name as owner_full_name, name, start_date, end_date FROM events
+				SELECT event_id, full_name as owner_full_name, name, start_date, end_date, end_date < CURDATE() as old FROM events
 					INNER JOIN users ON owner_user_id = user_id
-					ORDER BY event_id DESC
+					ORDER BY start_date ASC
 			");
 		} else {
 			$result = $dbManager->dynamicQuery("
@@ -322,7 +322,7 @@ class EventsModel implements Model {
 			SELECT event_workshops.workshop_id FROM event_workshops
 				INNER JOIN event_registration_workshops ON event_workshops.workshop_id = event_registration_workshops.workshop_id
 				INNER JOIN event_registrations ON event_registration_workshops.registration_id = event_registrations.registration_id
-					AND user_id = ? AND event_registrations.event_id = ?
+				WHERE user_id = ? AND event_workshops.event_id = ?
 		", "ii", $userId, $eventId);
 		$rows = mysqli_fetch_all($result, MYSQLI_NUM);
 		$registeredWorkshopIds = array_map(function ($x) {return $x[0];}, $rows);
@@ -333,10 +333,10 @@ class EventsModel implements Model {
 	public function getAllEventsUserIsRegisteredFor(int $userId): array {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		$result = $dbManager->dynamicQuery("
-			SELECT events.event_id, owner_user_id, full_name as owner_full_name, name, description, start_date, end_date, hero_img_name FROM events
+			SELECT events.event_id, owner_user_id, full_name as owner_full_name, name, description, start_date, end_date, hero_img_name, end_date < CURDATE() as old FROM events
 				INNER JOIN users ON owner_user_id = users.user_id
 				INNER JOIN event_registrations ON events.event_id = event_registrations.event_id AND event_registrations.user_id = ?
-				ORDER BY events.event_id DESC
+				ORDER BY events.start_date ASC
 		", "i", $userId);
 		$eventsDetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
 		foreach ($eventsDetails as &$eventDetails) {
@@ -344,7 +344,7 @@ class EventsModel implements Model {
 				SELECT event_workshops.workshop_id, name FROM event_workshops
 					INNER JOIN event_registration_workshops ON event_workshops.workshop_id = event_registration_workshops.workshop_id
 					INNER JOIN event_registrations ON event_registration_workshops.registration_id = event_registrations.registration_id
-						AND user_id = ? AND event_registrations.event_id = ?
+					WHERE user_id = ? AND event_workshops.event_id = ?
 			", "ii", $userId, $eventDetails["event_id"]);
 			$workshops = mysqli_fetch_all($result, MYSQLI_ASSOC);
 			$eventDetails["workshops"] = $workshops;
@@ -355,10 +355,10 @@ class EventsModel implements Model {
 	public function getAllEventsUserOwns(int $userId): array {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		$result = $dbManager->dynamicQuery("
-			SELECT event_id, owner_user_id, full_name as owner_full_name, name, description, start_date, end_date, hero_img_name FROM events
+			SELECT event_id, owner_user_id, full_name as owner_full_name, name, description, start_date, end_date, hero_img_name, end_date < CURDATE() as old FROM events
 				INNER JOIN users ON owner_user_id = user_id
 				WHERE owner_user_id = ?
-				ORDER BY event_id DESC
+				ORDER BY events.start_date ASC
 		", "i", $userId);
 		$eventsDetails = mysqli_fetch_all($result, MYSQLI_ASSOC);
 		foreach ($eventsDetails as &$eventDetails) {

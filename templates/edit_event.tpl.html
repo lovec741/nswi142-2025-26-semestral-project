@@ -1,4 +1,6 @@
-{include shared_top.tpl.html}
+{include shared_top_before_head_end.tpl.html}
+<script src="/static/js/edit_event.js"></script>
+{include shared_top_head_end.tpl.tpl.html}
 <h1>Edit Event</h1>
 <form method="post" enctype="multipart/form-data">
 	<div class="narrow-form">
@@ -50,52 +52,4 @@
 		Delete Event
 	</button>
 </form>
-
-<script>
-	(() => {
-		let tommorowDate = new Date();
-		tommorowDate.setDate(tommorowDate.getDate() + 1);
-		const minDateStr = tommorowDate.toISOString().split('T')[0];
-		const startDateEl = document.getElementById("startDate");
-		const endDateEl = document.getElementById("endDate");
-		startDateEl.min = minDateStr;
-		endDateEl.min = minDateStr;
-
-		const addWorkshopButtonEl = document.getElementById("add-workshop-button");
-		const workshopContainerEl = document.getElementById("workshop-container");
-		addWorkshopButtonEl.addEventListener("click", () => {
-			const newWorkshopInputEl = document.createElement("input");
-			newWorkshopInputEl.type = "text";
-			newWorkshopInputEl.name = "addWorkshop[]";
-			newWorkshopInputEl.required = "required";
-			const newWorkshopRemoveButtonEl = document.createElement("button");
-			newWorkshopRemoveButtonEl.type = "button";
-			newWorkshopRemoveButtonEl.className = "btn btn-sm";
-			newWorkshopRemoveButtonEl.textContent = "x Remove";
-			newWorkshopRemoveButtonEl.addEventListener("click", e => {
-				e.target.parentElement.remove();
-			});
-			const newWorkshopContainerDiv = document.createElement("div");
-			newWorkshopContainerDiv.className = "inner-workshop-container";
-			newWorkshopContainerDiv.append(newWorkshopInputEl, newWorkshopRemoveButtonEl);
-			workshopContainerEl.appendChild(newWorkshopContainerDiv);
-		})
-
-		const removeExistingWorkshopButtonEls = document.getElementsByClassName('remove-existing-workshop-button');
-		for (const removeExistingWorkshopButtonEl of removeExistingWorkshopButtonEls) {
-			removeExistingWorkshopButtonEl.addEventListener("click", e => {
-				const workshopId = e.target.parentElement.querySelector('input[type="hidden"]').value;
-				e.target.parentElement.remove();
-
-				const removeWorkshopInputEl = document.createElement("input");
-				removeWorkshopInputEl.type = "hidden";
-				removeWorkshopInputEl.name = "removeWorkshopId[]";
-				removeWorkshopInputEl.required = "required";
-				removeWorkshopInputEl.value = workshopId;
-				workshopContainerEl.appendChild(removeWorkshopInputEl);
-
-			})
-		};
-	})()
-</script>
 {include shared_bottom.tpl.html}
