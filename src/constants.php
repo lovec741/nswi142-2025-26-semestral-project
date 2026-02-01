@@ -5,3 +5,4 @@ define("ENV_FILE", __DIR__."/../.env");
 define("TEMPLATES_DIR", __DIR__."/../templates/");
 define("COMPILED_TEMPLATES_DIR", __DIR__."/../compiled_templates/");
 define("EVENTS_PER_PAGE", 7);
+define("DEMO_IMAGE_NAME", "demo_image");
