@@ -72,30 +72,13 @@ class EventsModel implements Model {
 		$dbManager->staticQuery("TRUNCATE events;");
 	}
 
-	private function getUUIDv4(): string { // stolen from stack overflow - https://stackoverflow.com/questions/2040240/php-function-to-generate-v4-uuid
-		$data = random_bytes(16);
-
-		$data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-		$data[8] = chr(ord($data[8]) & 0x3f | 0x80);
-
-		return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
-	}
-
-
 	/**
 	 * @param array $fileData taken from $_FILES
 	 *
 	 * @return string|null null if file is not valid or move failed, else returns the name of the uploaded file
 	 */
 	private function handleFileUpload(array $fileData): ?string {
-		if (empty($fileData)) {
-			return null;
-		}
-		if ($fileData['error'] != UPLOAD_ERR_OK) {
-			return null;
-		}
-
-		$newFileName = $this->getUUIDv4();
+		$newFileName = getUUID();
 
 
 		if (!move_uploaded_file(

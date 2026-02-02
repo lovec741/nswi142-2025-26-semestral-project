@@ -9,11 +9,11 @@
 		</p>
 		<p>
 			<label for="fullName">Full name:</label><br>
-			<input type="text" id="fullName" name="fullName" required value="{= $currentUsername }">
+			<input type="text" id="fullName" name="fullName" required value="{= $currentUsername }" maxlength="255">
 		</p>
 		<p>
-			<label for="email">Password</label><br>
-			<input type="password" id="password" name="password"><br>
+			<label for="password">Password</label><br>
+			<input type="password" id="password" name="password" maxlength="255"><br>
 			<small>Password is optional and not used for authentication. It is only stored in the database in plain text to make the DB leaks a little more interesting.</small>
 		</p>
 		<button type="submit" class="btn">

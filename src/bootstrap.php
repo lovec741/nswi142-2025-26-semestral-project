@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/constants.php';
+require_once __DIR__ . '/utils.php';
 require_once __DIR__ . '/templator.php';
 require_once __DIR__ . '/template_view.php';
 require_once __DIR__ . '/component_manager.php';

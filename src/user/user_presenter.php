@@ -8,16 +8,6 @@ class UserPresenter {
 		$this->componentManager = $componentManager;
 	}
 
-	// /**
-	//  * @return ?UserModel UserModel if loaded succesfully else null
-	//  */
-	// public function loadUserFromSession(): ?UserModel {
-	// 	$sessionManager = $this->componentManager->getByClass(SessionManager::class);
-	// 	$userId = $sessionManager->getCurrentUserId();
-	// 	$userExists = $userId === null ? false : $userModel->loadUserFromId($userId);
-	// 	return $userExists ? $userModel : null;
-	// }
-
 	public function getUserAuthArgs() {
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$args = [
@@ -58,12 +48,21 @@ class UserPresenter {
 		$this->redirectIfLoggedIn();
 		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
 		$userModel = $this->componentManager->getByClass(UserModel::class);
+
+		if (
+			!filter_var($postArgs["email"], FILTER_VALIDATE_EMAIL)  || strlen($postArgs["email"]) > 255
+			|| !isset($postArgs["password"]) || strlen($postArgs["password"]) > 255
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /login');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		if (!$userModel->checkIfUserExistsByEmail($postArgs["email"])) {
 			$flashMessageModel->addFlashMessage("User doesn't exist!", "error");
 			header('Location: /login');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
-		// TODO validate form
 
 		$userModel->loginUserByEmail($postArgs["email"]);
 		$flashMessageModel->addFlashMessage("Successfully logged in!", "success");
@@ -78,13 +77,23 @@ class UserPresenter {
 	public function processRegister($postArgs) {
 		$this->redirectIfLoggedIn();
 		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			!filter_var($postArgs["email"], FILTER_VALIDATE_EMAIL)  || strlen($postArgs["email"]) > 255
+			|| isNullOrEmptyString($postArgs["fullName"]) || strlen($postArgs["fullName"]) > 255
+			|| !isset($postArgs["password"]) || strlen($postArgs["password"]) > 255
+			|| !isset($postArgs["tosAgree"])
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /register');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		if ($userModel->checkIfUserExistsByEmail($postArgs["email"])) {
 			$flashMessageModel->addFlashMessage("You already have an account! Please login.", "warn");
 			header('Location: /login');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
-		// TODO validate form
 
 		$userModel->createNewUser($postArgs["email"], $postArgs["fullName"], $postArgs["password"]);
 		$userModel->loginUserByEmail($postArgs["email"]);
@@ -112,8 +121,17 @@ class UserPresenter {
 
 	public function processSettingsChange($postArgs) {
 		$userModel = $this->getModelAndCheckIfLoggedIn();
+		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			isNullOrEmptyString($postArgs["fullName"]) || strlen($postArgs["fullName"]) > 255
+			|| !isset($postArgs["password"]) || strlen($postArgs["password"]) > 255
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /settings');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
 		$userModel->updateCurrentUser($postArgs["fullName"], $postArgs["password"]);
-		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Settings changed!", "success");
+		$flashMessageModel->addFlashMessage("Settings changed!", "success");
 		header('Location: /settings');
 	}
 

@@ -14,17 +14,18 @@
 		</p>
 		<p>
 			<label for="startDate">Start date:</label><br>
-			<input type="date" id="startDate" name="startDate" required value="{= $event['start_date']}"/><br>
+			<input type="date" id="startDate" name="startDate" required value="{= $event['start_date']}"><br>
 			<small>Has to be in the future</small>
 		</p>
 		<p>
 			<label for="endDate">End date:</label><br>
-			<input type="date" id="endDate" name="endDate" required value="{= $event['end_date']}"/><br>
+			<input type="date" id="endDate" name="endDate" required value="{= $event['end_date']}"><br>
 			<small>Has to be in the future and the same day or later then the start date</small>
 		</p>
 		<p>
 			<label for="heroImage">Hero image:</label><br>
-			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg"/>
+			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg"><br>
+			<small>Only .PNG and .JPG supported.</small><br>
 			<small>If nothing is uploaded then current image is kept.</small>
 		</p>
 		<div class="margin-top-md margin-bottom-md">
@@ -32,9 +33,9 @@
 			<div id="workshop-container" class="workshop-container">
 				{for $i = 0; $i < count($event['workshops']); $i++ }
 					<div class="inner-workshop-container">
-						<input type="text" name="updateWorkshop[{= $i}][name]" required value="{= $event['workshops'][$i]['name']}"/>
+						<input type="text" name="updateWorkshop[{= $i}][name]" required maxlength="255" value="{= $event['workshops'][$i]['name']}">
 						{if $i !== 0}<button type="button" class="btn btn-sm remove-existing-workshop-button">x Remove</button>{/if}
-						<input type="hidden" name="updateWorkshop[{= $i}][workshopId]" required value="{= $event['workshops'][$i]['workshop_id']}"/>
+						<input type="hidden" name="updateWorkshop[{= $i}][workshopId]" value="{= $event['workshops'][$i]['workshop_id']}">
 					</div>
 				{/for}
 			</div>

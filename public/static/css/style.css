@@ -74,17 +74,12 @@ ul {
 	height: 100%;
 }
 
-
 .container {
     display: flex;
     flex-direction: column;
     align-items: start;
     width: 100vw;
     margin: 0;
-}
-
-main.container {
-	flex-grow: 1;
 }
 
 .container > * {
@@ -102,8 +97,9 @@ main.container {
     }
 }
 
-article.container {
-    margin-top: 2rem;
+main.container {
+	flex-grow: 1;
+	margin-top: 2rem;
     margin-bottom: 4rem;
 }
 

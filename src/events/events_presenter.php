@@ -35,15 +35,97 @@ class EventsPresenter {
 		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("create_event");
 	}
 
+	private function validateStartAndEndDates(?string $startDateStr, ?string $endDateStr): bool {
+		$startDate = DateTime::createFromFormat('Y-m-d', $startDateStr);
+		$endDate = DateTime::createFromFormat('Y-m-d', $endDateStr);
+		if (!$startDate || $startDate->format('Y-m-d') !== $startDateStr
+			|| !$endDate || $endDate->format('Y-m-d') !== $endDateStr) {
+			return false;
+		}
+		return $startDate <= $endDate;
+	}
+
+	private function validateImageFileUpload(?array $fileData, bool $noFileOk = false): bool {
+		if (empty($fileData)) {
+			return false;
+		}
+		if ($noFileOk && $fileData['error'] == UPLOAD_ERR_NO_FILE) {
+			return true;
+		}
+
+		if ($fileData['error'] != UPLOAD_ERR_OK) {
+			return false;
+		}
+		$allowed = ['png', 'jpg', 'jpeg'];
+		$ext = pathinfo(strtolower($fileData['name']), PATHINFO_EXTENSION);
+		if (!in_array($ext, $allowed)) {
+			return false;
+		}
+		return true;
+	}
+
+	private function validateWorkshopNames(?array $workshopNames, bool $missingOk = false): bool {
+		if ($missingOk && !isset($workshopNames)) {
+			return true;
+		}
+		if (!is_array($workshopNames)) {
+			return false;
+		}
+		return !in_array(false, array_map(function ($x) {
+			return !isNullOrEmptyString($x) && strlen($x) <= 255;
+		}, $workshopNames));
+	}
+
+	private function validateWorkshopIds(?array $workshopIds, array $currentEventWorkshops, bool $missingOk = false): bool {
+		if ($missingOk && !isset($workshopIds)) {
+			return true;
+		}
+		if (!is_array($workshopIds)) {
+			return false;
+		}
+		$validWorkshopIds = array_map(function ($workshop) {
+			return $workshop["workshop_id"];
+		}, $currentEventWorkshops);
+		return !in_array(false, array_map(function ($workshopId) use ($validWorkshopIds) {
+			return filter_var($workshopId, FILTER_VALIDATE_INT) && in_array((int)$workshopId, $validWorkshopIds, true);
+		}, $workshopIds));
+	}
+
+	private function validateWorkshops(?array $workshops, array $currentEventWorkshops): bool {
+		if (!is_array($workshops)) {
+			return false;
+		}
+		$workshopIds = array_map(function ($workshop) {
+			return $workshop["workshopId"];
+		}, $workshops);
+		$workshopNames = array_map(function ($workshop) {
+			return $workshop["name"];
+		}, $workshops);
+		return $this->validateWorkshopNames($workshopNames) && $this->validateWorkshopIds($workshopIds, $currentEventWorkshops);
+	}
+
+
 	public function processCreateEvent($postArgs, $_, $files) {
 		$userPresenter = $this->componentManager->getByClass(UserPresenter::class);
 		$userModel = $userPresenter->getModelAndCheckIfLoggedIn();
 
+		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			isNullOrEmptyString($postArgs["name"]) || strlen($postArgs["name"]) > 64
+			|| isNullOrEmptyString($postArgs["description"]) || strlen($postArgs["description"]) > 1024
+			|| !$this->validateStartAndEndDates($postArgs["startDate"], $postArgs["endDate"])
+			|| !$this->validateImageFileUpload($files["heroImage"])
+			|| !$this->validateWorkshopNames($postArgs["workshop"])
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /events/new');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
-		// TODO validate form
 		$eventId = $eventsModel->createEvent($userModel->getUserId(), $postArgs['name'], $postArgs['description'], $postArgs['startDate'], $postArgs['endDate'], $files["heroImage"], $postArgs['workshop']);
 
-		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Creation was succesful!", "success");
+		$flashMessageModel->addFlashMessage("Creation was succesful!", "success");
 		header('Location: /events/'.$eventId);
 	}
 
@@ -83,16 +165,29 @@ class EventsPresenter {
 	}
 
 	public function processEditEvent(string $eventId, $postArgs, $_, $files) {
-		var_export($files);
-
 		$eventId = (int) $eventId;
 		$event = $this->getEventDetailWithCheck($eventId);
 		$this->checkUserLoggedInAndIsOwner($event);
 
+		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			isNullOrEmptyString($postArgs["name"]) || strlen($postArgs["name"]) > 64
+			|| isNullOrEmptyString($postArgs["description"]) || strlen($postArgs["description"]) > 1024
+			|| !$this->validateStartAndEndDates($postArgs["startDate"], $postArgs["endDate"])
+			|| !$this->validateImageFileUpload($files["heroImage"], true)
+			|| !$this->validateWorkshopNames($postArgs["addWorkshop"], true)
+			|| !$this->validateWorkshopIds($postArgs["removeWorkshopId"], $event['workshops'], true)
+			|| !$this->validateWorkshops($postArgs["updateWorkshop"], $event['workshops'])
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /events/'.$eventId.'/edit');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 		$eventsModel->updateEvent($eventId, $postArgs['name'], $postArgs['description'], $postArgs['startDate'], $postArgs['endDate'], $files["heroImage"], $postArgs['updateWorkshop'], $postArgs['removeWorkshopId'] ?? [], $postArgs['addWorkshop'] ?? []);
 
-		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Changes were saved!", "success");
+		$flashMessageModel->addFlashMessage("Changes were saved!", "success");
 		header('Location: /events/'.$eventId);
 	}
 
@@ -174,12 +269,21 @@ class EventsPresenter {
 
 	public function processEventRegistration(string $eventId, $postArgs) {
 		$eventId = (int) $eventId;
-		$this->getEventDetailWithCanRegisterCheck($eventId);
-		// TODO validate form
+		$event = $this->getEventDetailWithCanRegisterCheck($eventId);
+
+		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			!$this->validateWorkshopIds($postArgs["workshop"], $event['workshops'], true)
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /events/'.$eventId.'/register');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$eventsModel->createEventRegistration($userModel->getUserId(), $eventId, $postArgs['workshop'] ?? []);
-		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Successfully registered for event!", "success");
+		$flashMessageModel->addFlashMessage("Successfully registered for event!", "success");
 		header('Location: /events/mine');
 	}
 
@@ -192,12 +296,21 @@ class EventsPresenter {
 
 	public function processEventEditRegistration(string $eventId, $postArgs) {
 		$eventId = (int) $eventId;
-		$this->getEventDetailWithCanRegisterCheck($eventId, true);
-		// TODO validate form
+		$event = $this->getEventDetailWithCanRegisterCheck($eventId, true);
+
+		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
+		if (
+			!$this->validateWorkshopIds($postArgs["workshop"], $event['workshops'], true)
+		) {
+			$flashMessageModel->addFlashMessage("Form invalid!", "error");
+			header('Location: /events/'.$eventId.'/register/edit');
+			$this->componentManager->getByName("shutdown_manager")->shutdown();
+		}
+
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$eventsModel->updateEventRegistration($userModel->getUserId(), $eventId, $postArgs['workshop'] ?? []);
-		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Registration changed!", "success");
+		$flashMessageModel->addFlashMessage("Registration changed!", "success");
 		header('Location: /events/mine');
 	}
 

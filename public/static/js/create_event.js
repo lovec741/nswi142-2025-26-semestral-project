@@ -7,11 +7,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	startDateEl.min = minDateStr;
 	endDateEl.min = minDateStr;
 
+	startDateEl.addEventListener("input", () => {
+		endDateEl.min = startDateEl.value;
+	});
+
 	const addWorkshopButtonEl = document.getElementById("add-workshop-button");
 	const workshopContainerEl = document.getElementById("workshop-container");
 	addWorkshopButtonEl.addEventListener("click", () => {
 		const newWorkshopInputEl = document.createElement("input");
 		newWorkshopInputEl.type = "text";
+		newWorkshopInputEl.maxLength = "255";
 		newWorkshopInputEl.name = "workshop[]";
 		newWorkshopInputEl.required = "required";
 		const newWorkshopRemoveButtonEl = document.createElement("button");
@@ -25,5 +30,5 @@ document.addEventListener("DOMContentLoaded", () => {
 		newWorkshopContainerDiv.className = "inner-workshop-container";
 		newWorkshopContainerDiv.append(newWorkshopInputEl, newWorkshopRemoveButtonEl);
 		workshopContainerEl.appendChild(newWorkshopContainerDiv);
-	})
+	});
 });

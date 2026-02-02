@@ -14,22 +14,23 @@
 		</p>
 		<p>
 			<label for="startDate">Start date:</label><br>
-			<input type="date" id="startDate" name="startDate" required/><br>
+			<input type="date" id="startDate" name="startDate" required><br>
 			<small>Has to be in the future</small>
 		</p>
 		<p>
 			<label for="endDate">End date:</label><br>
-			<input type="date" id="endDate" name="endDate" required/><br>
+			<input type="date" id="endDate" name="endDate" required><br>
 			<small>Has to be in the future and the same day or later then the start date</small>
 		</p>
 		<p>
 			<label for="heroImage">Hero image:</label><br>
-			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg" required/>
+			<input type="file" id="heroImage" name="heroImage" accept="image/png, image/jpeg" required><br>
+			<small>Only .PNG and .JPG supported.</small>
 		</p>
 		<div class="margin-top-md margin-bottom-md">
 			<label>Workshops:</label>
 			<div id="workshop-container" class="workshop-container">
-				<input type="text" name="workshop[]" required/>
+				<input type="text" name="workshop[]" maxlength="255" required>
 			</div>
 			<button type="button" class="btn" id="add-workshop-button">+ Add Workshop</button>
 		</div>

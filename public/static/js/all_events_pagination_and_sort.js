@@ -34,7 +34,7 @@ class View {
 	}
 
 	getShownEventElements() {
-		return [...this.eventsContainer.children]
+		return [...this.eventsContainer.children];
 	}
 
 	setDescButtonActive(active) {
@@ -120,7 +120,7 @@ class Model {
 	getEventElements() {
 		let elements = this.hideOldEvents ? this.newEventElements.slice() : this.allEventElements.slice();
 		if (this.sortDesc) {
-			elements = elements.reverse()
+			elements = elements.reverse();
 		}
 		return elements.slice((this.pageNum - 1) * EVENTS_PER_PAGE, this.pageNum * EVENTS_PER_PAGE);
 	}
