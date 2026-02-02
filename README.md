@@ -2,9 +2,9 @@
 
 ## Screenshots
 ### Landing Page
-![Landing Page Screenshot](./readme_imgs/landing_page.png)
+![Landing Page Screenshot](readme_imgs/landing_page.png)
 ### Event Register Page
-![Event Register Page Screenshot](./readme_imgs/event_register_page.png)
+![Event Register Page Screenshot](readme_imgs/event_register_page.png)
 
 ## Running
 
