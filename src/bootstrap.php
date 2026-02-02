@@ -18,6 +18,8 @@ require_once __DIR__ . '/flash_message/flash_message_model.php';
 
 $configFile = parse_ini_file(ENV_FILE, true);
 
+define('BASE_URL', $configFile['WEB']['BASE_URL']);
+
 $routes = [
 	"/" => [
 		"GET" => ["events.presenter", "showLanding"]

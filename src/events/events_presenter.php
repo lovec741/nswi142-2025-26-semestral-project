@@ -118,7 +118,7 @@ class EventsPresenter {
 			|| !$this->validateWorkshopNames($postArgs["workshop"])
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /events/new');
+			header('Location: '.BASE_URL.'/events/new');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
@@ -126,7 +126,7 @@ class EventsPresenter {
 		$eventId = $eventsModel->createEvent($userModel->getUserId(), $postArgs['name'], $postArgs['description'], $postArgs['startDate'], $postArgs['endDate'], $files["heroImage"], $postArgs['workshop']);
 
 		$flashMessageModel->addFlashMessage("Creation was succesful!", "success");
-		header('Location: /events/'.$eventId);
+		header('Location: '.BASE_URL.'/events/'.$eventId);
 	}
 
 	private function getEventDetailWithCheck(int $eventId): array {
@@ -180,7 +180,7 @@ class EventsPresenter {
 			|| !$this->validateWorkshops($postArgs["updateWorkshop"], $event['workshops'])
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /events/'.$eventId.'/edit');
+			header('Location: '.BASE_URL.'/events/'.$eventId.'/edit');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
@@ -188,7 +188,7 @@ class EventsPresenter {
 		$eventsModel->updateEvent($eventId, $postArgs['name'], $postArgs['description'], $postArgs['startDate'], $postArgs['endDate'], $files["heroImage"], $postArgs['updateWorkshop'], $postArgs['removeWorkshopId'] ?? [], $postArgs['addWorkshop'] ?? []);
 
 		$flashMessageModel->addFlashMessage("Changes were saved!", "success");
-		header('Location: /events/'.$eventId);
+		header('Location: '.BASE_URL.'/events/'.$eventId);
 	}
 
 	public function processDeleteEvent(string $eventId) {
@@ -199,7 +199,7 @@ class EventsPresenter {
 		$eventsModel->deleteEvent($eventId);
 
 		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Event was deleted!", "success");
-		header('Location: /events');
+		header('Location: '.BASE_URL.'/events');
 
 	}
 
@@ -276,7 +276,7 @@ class EventsPresenter {
 			!$this->validateWorkshopIds($postArgs["workshop"], $event['workshops'], true)
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /events/'.$eventId.'/register');
+			header('Location: '.BASE_URL.'/events/'.$eventId.'/register');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
@@ -284,7 +284,7 @@ class EventsPresenter {
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$eventsModel->createEventRegistration($userModel->getUserId(), $eventId, $postArgs['workshop'] ?? []);
 		$flashMessageModel->addFlashMessage("Successfully registered for event!", "success");
-		header('Location: /events/mine');
+		header('Location: '.BASE_URL.'/events/mine');
 	}
 
 	public function showEventEditRegistration(string $eventId) {
@@ -303,7 +303,7 @@ class EventsPresenter {
 			!$this->validateWorkshopIds($postArgs["workshop"], $event['workshops'], true)
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /events/'.$eventId.'/register/edit');
+			header('Location: '.BASE_URL.'/events/'.$eventId.'/register/edit');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
@@ -311,7 +311,7 @@ class EventsPresenter {
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$eventsModel->updateEventRegistration($userModel->getUserId(), $eventId, $postArgs['workshop'] ?? []);
 		$flashMessageModel->addFlashMessage("Registration changed!", "success");
-		header('Location: /events/mine');
+		header('Location: '.BASE_URL.'/events/mine');
 	}
 
 	public function processEventCancelRegistration(string $eventId) {
@@ -321,6 +321,6 @@ class EventsPresenter {
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		$eventsModel->deleteEventRegistration($userModel->getUserId(), $eventId);
 		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Registration canceled!", "success");
-		header('Location: /events/mine');
+		header('Location: '.BASE_URL.'/events/mine');
 	}
 }

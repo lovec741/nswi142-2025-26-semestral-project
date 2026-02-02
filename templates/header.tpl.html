@@ -2,20 +2,20 @@
 <header class="container">
 	<nav class="navbar">
 		<a href="/" class="{if $path === '/'}active{/if} lead navbar-icon-link ">
-			<img class="navbar-icon-img" alt="Calendar Icon" src="/static/img/calendar.svg">
+			<img class="navbar-icon-img" alt="Calendar Icon" src="{= BASE_URL}/static/img/calendar.svg">
 			EventHorizon
 		</a>
 		<a href="/events" class="{if $path === '/events'}active{/if} navbar-icon-link">
-			<img class="navbar-icon-img" alt="Globe Icon" src="/static/img/globe.svg">
+			<img class="navbar-icon-img" alt="Globe Icon" src="{= BASE_URL}/static/img/globe.svg">
 			All events
 		</a>
 		{if $isLoggedIn}
 			<a href="/events/mine" class="{if $path === '/events/mine'}active{/if} navbar-icon-link">
-				<img class="navbar-icon-img" alt="Star Icon" src="/static/img/star.svg">
+				<img class="navbar-icon-img" alt="Star Icon" src="{= BASE_URL}/static/img/star.svg">
 				My events
 			</a>
 			<a href="/events/new" class="{if $path === '/events/new'}active{/if} navbar-icon-link">
-				<img class="navbar-icon-img" alt="Plus Icon" src="/static/img/plus.svg">
+				<img class="navbar-icon-img" alt="Plus Icon" src="{= BASE_URL}/static/img/plus.svg">
 				Create Event
 			</a>
 		{/if}
@@ -25,7 +25,7 @@
 		{/if}
 		{if $isLoggedIn}
 			<a href="/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
-			<a href="#" onclick="document.getElementById('logout-form').submit()" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" alt="Logout Icon" src="/static/img/logout.svg"></a>
+			<a href="#" onclick="document.getElementById('logout-form').submit()" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" alt="Logout Icon" src="{= BASE_URL}/static/img/logout.svg"></a>
 		{/if}
 	</nav>
 </header>

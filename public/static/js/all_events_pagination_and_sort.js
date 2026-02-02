@@ -24,7 +24,6 @@ class View {
 
 	showEventElements(shownElements) {
 		const eventElements = this.getShownEventElements();
-		console.log(eventElements);
 		eventElements.forEach(element => {
 			this.unusedEventsContainer.append(element);
 		});

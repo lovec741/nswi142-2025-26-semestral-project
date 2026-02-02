@@ -54,19 +54,19 @@ class UserPresenter {
 			|| !isset($postArgs["password"]) || strlen($postArgs["password"]) > 255
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /login');
+			header('Location: '.BASE_URL.'/login');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
 		if (!$userModel->checkIfUserExistsByEmail($postArgs["email"])) {
 			$flashMessageModel->addFlashMessage("User doesn't exist!", "error");
-			header('Location: /login');
+			header('Location: '.BASE_URL.'/login');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
 		$userModel->loginUserByEmail($postArgs["email"]);
 		$flashMessageModel->addFlashMessage("Successfully logged in!", "success");
-		header('Location: /');
+		header('Location: '.BASE_URL.'/');
 	}
 
 	public function showRegister() {
@@ -84,21 +84,21 @@ class UserPresenter {
 			|| !isset($postArgs["tosAgree"])
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /register');
+			header('Location: '.BASE_URL.'/register');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
 		$userModel = $this->componentManager->getByClass(UserModel::class);
 		if ($userModel->checkIfUserExistsByEmail($postArgs["email"])) {
 			$flashMessageModel->addFlashMessage("You already have an account! Please login.", "warn");
-			header('Location: /login');
+			header('Location: '.BASE_URL.'/login');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 
 		$userModel->createNewUser($postArgs["email"], $postArgs["fullName"], $postArgs["password"]);
 		$userModel->loginUserByEmail($postArgs["email"]);
 		$flashMessageModel->addFlashMessage("Account successfully registered!", "success");
-		header('Location: /');
+		header('Location: '.BASE_URL.'/');
 	}
 
 	public function processLogout() {
@@ -106,7 +106,7 @@ class UserPresenter {
 		$userModel->logoutUser();
 		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
 		$flashMessageModel->addFlashMessage("You have been logged out!", "success");
-		header('Location: /');
+		header('Location: '.BASE_URL.'/');
 	}
 
 	public function showSettings() {
@@ -127,12 +127,12 @@ class UserPresenter {
 			|| !isset($postArgs["password"]) || strlen($postArgs["password"]) > 255
 		) {
 			$flashMessageModel->addFlashMessage("Form invalid!", "error");
-			header('Location: /settings');
+			header('Location: '.BASE_URL.'/settings');
 			$this->componentManager->getByName("shutdown_manager")->shutdown();
 		}
 		$userModel->updateCurrentUser($postArgs["fullName"], $postArgs["password"]);
 		$flashMessageModel->addFlashMessage("Settings changed!", "success");
-		header('Location: /settings');
+		header('Location: '.BASE_URL.'/settings');
 	}
 
 	public function processDelete() {
@@ -141,6 +141,6 @@ class UserPresenter {
 		$userModel->logoutUser();
 		$flashMessageModel = $this->componentManager->getByClass(FlashMessageModel::class);
 		$flashMessageModel->addFlashMessage("Account deleted!", "success");
-		header('Location: /');
+		header('Location: '.BASE_URL.'/');
 	}
 }

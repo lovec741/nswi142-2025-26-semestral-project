@@ -14,7 +14,7 @@
 	{foreach $registeredEvents as $event}
 		<div class="event-details-display {if $event['old']}old{/if}">
 			<b>{= $event['name']}</b>
-			<img class="hero-img" alt="Event hero image" src="/data/{= $event['hero_img_name']}">
+			<img class="hero-img" alt="Event hero image" src="{= BASE_URL}/data/{= $event['hero_img_name']}">
 			<span><b>Description:</b></span>
 			<span>{= $event['description']}</span>
 			<span><b>Start date:</b> {= $event['start_date']}</span>
@@ -56,7 +56,7 @@
 	{foreach $ownedEvents as $event}
 		<div class="event-details-display {if $event['old']}old{/if}">
 			<b>{= $event['name']}</b>
-			<img class="hero-img" alt="Event hero image" src="/data/{= $event['hero_img_name']}">
+			<img class="hero-img" alt="Event hero image" src="{= BASE_URL}/data/{= $event['hero_img_name']}">
 			<span><b>Description:</b></span>
 			<span>{= $event['description']}</span>
 			<span><b>Start date:</b> {= $event['start_date']}</span>

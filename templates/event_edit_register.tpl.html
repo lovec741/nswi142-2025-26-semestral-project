@@ -2,7 +2,7 @@
 <h1 class="margin-bottom-lg">Edit Event Registration</h1>
 <div class="event-details-display">
 	<b>{= $event['name']}</b>
-	<img class="hero-img" alt="Event hero image" src="/data/{= $event['hero_img_name']}">
+	<img class="hero-img" alt="Event hero image" src="{= BASE_URL}/data/{= $event['hero_img_name']}">
 	<span><b>Description:</b></span>
 	<span>{= $event['description']}</span>
 	<span><b>Start date:</b> {= $event['start_date']}</span>
