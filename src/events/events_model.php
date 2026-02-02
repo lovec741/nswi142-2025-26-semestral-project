@@ -61,11 +61,23 @@ class EventsModel implements Model {
 					ON DELETE CASCADE
 			);
 		");
+
+		$dbManager->staticQuery("
+			CREATE TABLE IF NOT EXISTS event_banned_users (
+				event_id INT NOT NULL,
+				user_id INT NOT NULL,
+				FOREIGN KEY (user_id) REFERENCES users(user_id)
+					ON DELETE CASCADE,
+				FOREIGN KEY (event_id) REFERENCES events(event_id)
+					ON DELETE CASCADE
+			);
+		");
 	}
 
 	public function dropTables() {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		$dbManager->staticQuery("SET FOREIGN_KEY_CHECKS = 0;");
+		$dbManager->staticQuery("TRUNCATE event_banned_users;");
 		$dbManager->staticQuery("TRUNCATE event_registration_workshops;");
 		$dbManager->staticQuery("TRUNCATE event_registrations;");
 		$dbManager->staticQuery("TRUNCATE event_workshops;");
@@ -298,6 +310,17 @@ class EventsModel implements Model {
 		return $result->num_rows !== 0;
 	}
 
+	public function getUsersRegisteredToEvent(int $eventId): array {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT users.user_id, full_name FROM users
+				INNER JOIN event_registrations ON users.user_id = event_registrations.user_id
+				WHERE event_id = ?
+		", "i", $eventId);
+		$rows = mysqli_fetch_all($result, MYSQLI_ASSOC);
+		return $rows;
+	}
+
 	public function getEventDetailsAndRegisteredWorkshops(int $userId, int $eventId): array {
 		$dbManager = $this->componentManager->getByName("db_manager");
 		$eventDetails = $this->getEventDetails($eventId);
@@ -371,5 +394,22 @@ class EventsModel implements Model {
 
 		$row = mysqli_fetch_array($result, MYSQLI_NUM);
 		return $row[0];
+	}
+
+	public function banUserFromEvent(int $userId, int $eventId) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$dbManager->dynamicQuery("
+			INSERT INTO event_banned_users
+			(user_id, event_id) VALUES (?, ?)
+		", "ii", $userId, $eventId);
+	}
+
+	public function isUserBannedFromEvent(int $userId, int $eventId) {
+		$dbManager = $this->componentManager->getByName("db_manager");
+		$result = $dbManager->dynamicQuery("
+			SELECT 1 FROM event_banned_users
+			WHERE user_id = ? AND event_id = ?
+		", "ii", $userId, $eventId);
+		return $result->num_rows !== 0;
 	}
 }

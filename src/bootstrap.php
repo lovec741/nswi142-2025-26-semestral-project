@@ -40,6 +40,12 @@ $routes = [
 		"GET" => ["events.presenter", "showEditEvent"],
 		"POST" => ["events.presenter", "processEditEvent"]
 	],
+	"/events/{}/kick/{}" => [
+		"POST" => ["events.presenter", "processEventKickUser"]
+	],
+	"/events/{}/ban/{}" => [
+		"POST" => ["events.presenter", "processEventBanUser"]
+	],
 	"/events/{}/delete" => [
 		"POST" => ["events.presenter", "processDeleteEvent"]
 	],

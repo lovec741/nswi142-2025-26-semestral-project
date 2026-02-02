@@ -382,6 +382,13 @@ form input:not([type="checkbox"]), form textarea {
 	width: 50ch;
 }
 
+.manage-attendees-item {
+	display: flex;
+	flex-direction: row;
+	gap: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+
 @media (width <= 600px) {
     .narrow-form {
         width: 100%;

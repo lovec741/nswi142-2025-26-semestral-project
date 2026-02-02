@@ -95,6 +95,14 @@ class UserModel implements Model {
 		return $result->num_rows !== 0;
 	}
 
+	public function checkIfUserExistsById(int $userId): bool {
+		$result = $this->componentManager->getByName("db_manager")->dynamicQuery("
+			SELECT * FROM users
+			WHERE user_id = ?
+		", "i", $userId);
+		return $result->num_rows !== 0;
+	}
+
 	public function loginUserByEmail(string $email): bool {
 		$result = $this->componentManager->getByName("db_manager")->dynamicQuery("
 			SELECT user_id, full_name FROM users

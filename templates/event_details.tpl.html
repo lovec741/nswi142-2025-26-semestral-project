@@ -21,15 +21,50 @@
 					<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/edit">Edit →</a>
 				{/if}
 				{if !$isEventOwner}
-					{if !$isRegisteredToEvent}
-						<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register">Register →</a>
+					{if $isBannedFromEvent}
+						<span>You are banned from this event!</span>
 					{/if}
-					{if $isRegisteredToEvent}
-						<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+					{if !$isBannedFromEvent}
+						{if !$isRegisteredToEvent}
+							<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register">Register →</a>
+						{/if}
+						{if $isRegisteredToEvent}
+							<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+						{/if}
 					{/if}
 				{/if}
 			</div>
 		{/if}
+
+		{if $isEventOwner}
+			<h2 class="margin-top-lg">Manage Attendees</h1>
+			{if count($registeredUsers) > 0}
+			<ul>
+				{foreach $registeredUsers as $registeredUser}
+					<li>
+						<div class="manage-attendees-item">
+							{= $registeredUser['full_name']}
+							<form method="post" action="{= BASE_URL}/events/{= $event['event_id']}/kick/{= $registeredUser['user_id']}" onsubmit="return confirm('Are you sure you want to kick user \'{= $registeredUser['full_name']}\' from this event?');">
+								<button type="submit" class="btn btn-sm">
+									Kick
+								</button>
+							</form>
+							<form method="post" action="{= BASE_URL}/events/{= $event['event_id']}/ban/{= $registeredUser['user_id']}" onsubmit="return confirm('Are you sure you want to ban user \'{= $registeredUser['full_name']}\' from this event?');">
+								<button type="submit" class="btn btn-sm btn-danger">
+									Ban
+								</button>
+							</form>
+						</div>
+					</li>
+				{/foreach}
+			</ul>
+			{/if}
+			{if count($registeredUsers) === 0}
+			<span><b>There are currently no registered users!</b></span>
+			{/if}
+		{/if}
 	</div>
 </div>
+
+
 {include shared_bottom.tpl.html}

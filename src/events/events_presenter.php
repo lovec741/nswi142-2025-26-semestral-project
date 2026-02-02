@@ -133,6 +133,7 @@ class EventsPresenter {
 		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 		$event = $eventsModel->getEventDetails($eventId);
 		if (!isset($event["event_id"])) {
+			$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Non-existent event!", "error");
 			$this->componentManager->getByClass(TemplateView::class)->renderTemplate("404");
 		}
 		return $event;
@@ -160,8 +161,8 @@ class EventsPresenter {
 		$eventId = (int) $eventId;
 		$event = $this->getEventDetailWithCheck($eventId);
 		$this->checkUserLoggedInAndIsOwner($event);
-
-		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("edit_event", ["event" => $event]);
+		$args = ["event" => $event];
+		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("edit_event", $args);
 	}
 
 	public function processEditEvent(string $eventId, $postArgs, $_, $files) {
@@ -188,7 +189,17 @@ class EventsPresenter {
 		$eventsModel->updateEvent($eventId, $postArgs['name'], $postArgs['description'], $postArgs['startDate'], $postArgs['endDate'], $files["heroImage"], $postArgs['updateWorkshop'], $postArgs['removeWorkshopId'] ?? [], $postArgs['addWorkshop'] ?? []);
 
 		$flashMessageModel->addFlashMessage("Changes were saved!", "success");
-		header('Location: '.BASE_URL.'/events/'.$eventId);
+		header('Location: '.BASE_URL.'/events/'.$eventId.'/edit');
+	}
+
+	private function checkIfEventIdAndUserIdValidAndCurrentUserIsEventOwner(int $eventId, int $userId) {
+		$event = $this->getEventDetailWithCheck($eventId);
+		$this->checkUserLoggedInAndIsOwner($event);
+		$userModel = $this->componentManager->getByClass(UserModel::class);
+		if (!$userModel->checkIfUserExistsById($userId)) {
+			$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Non-existent user!", "error");
+			$this->componentManager->getByClass(TemplateView::class)->renderTemplate("404");
+		}
 	}
 
 	public function processDeleteEvent(string $eventId) {
@@ -212,10 +223,35 @@ class EventsPresenter {
 		if ($userModel->isLoggedIn()) {
 			$currentUserId = $userModel->getUserId();
 			$eventsModel = $this->componentManager->getByClass(EventsModel::class);
+			$args["isBannedFromEvent"] = $eventsModel->isUserBannedFromEvent($currentUserId, $eventId);
 			$args["isRegisteredToEvent"] = $eventsModel->isUserRegisteredToEvent($currentUserId, $eventId);
 			$args["isEventOwner"] = $event["owner_user_id"] === $currentUserId;
+			if ($args["isEventOwner"]) {
+				$args["registeredUsers"] = $eventsModel->getUsersRegisteredToEvent($eventId);
+			}
 		}
 		$this->componentManager->getByClass(TemplateView::class)->renderTemplate("event_details", $args);
+	}
+
+	public function processEventKickUser(string $eventId, string $kickUserId) {
+		$eventId = (int) $eventId;
+		$kickUserId = (int) $kickUserId;
+		$this->checkIfEventIdAndUserIdValidAndCurrentUserIsEventOwner($eventId, $kickUserId);
+		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
+		$eventsModel->deleteEventRegistration($kickUserId, $eventId);
+		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("User kicked!", "success");
+		header('Location: '.BASE_URL.'/events/'.$eventId);
+	}
+
+	public function processEventBanUser(string $eventId, string $banUserId) {
+		$eventId = (int) $eventId;
+		$banUserId = (int) $banUserId;
+		$this->checkIfEventIdAndUserIdValidAndCurrentUserIsEventOwner($eventId, $banUserId);
+		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
+		$eventsModel->banUserFromEvent($banUserId, $eventId);
+		$eventsModel->deleteEventRegistration($banUserId, $eventId);
+		$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("User banned!", "success");
+		header('Location: '.BASE_URL.'/events/'.$eventId);
 	}
 
 	public function showMyEvents($getArgs) {
@@ -240,6 +276,11 @@ class EventsPresenter {
 	private function getEventDetailWithCanRegisterCheck(int $eventId, bool $fromEdit = false): array {
 		$userPresenter = $this->componentManager->getByClass(UserPresenter::class);
 		$userModel = $userPresenter->getModelAndCheckIfLoggedIn();
+		$eventsModel = $this->componentManager->getByClass(EventsModel::class);
+		if ($eventsModel->isUserBannedFromEvent($userModel->getUserId(), $eventId)) {
+			$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("You are banned from this event!", "error");
+			$this->componentManager->getByClass(TemplateView::class)->renderTemplate("403");
+		}
 		if (!$fromEdit) {
 			$event = $this->getEventDetailWithCheck($eventId);
 		} else {
@@ -251,7 +292,6 @@ class EventsPresenter {
 			$this->componentManager->getByClass(TemplateView::class)->renderTemplate("403");
 		}
 		if (!$fromEdit) {
-			$eventsModel = $this->componentManager->getByClass(EventsModel::class);
 			if ($eventsModel->isUserRegisteredToEvent($userModel->getUserId(), $eventId)) {
 				$this->componentManager->getByClass(FlashMessageModel::class)->addFlashMessage("Already registered for event!", "error");
 				$this->componentManager->getByClass(TemplateView::class)->renderTemplate("403");
