@@ -23,7 +23,7 @@
 		</button>
 	</form>
 
-	<form action="/events/{= $event['event_id']}/register/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel the reservation to \'{= $event['name']}\'?');">
+	<form action="{= BASE_URL}/events/{= $event['event_id']}/register/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel the reservation to \'{= $event['name']}\'?');">
 		<button type="submit" class="btn margin-top-lg btn-danger">
 			Cancel Registration
 		</button>

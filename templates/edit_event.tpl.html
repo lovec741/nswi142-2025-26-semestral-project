@@ -48,7 +48,7 @@
 </form>
 
 <h2 class="margin-top-lg">Danger zone</h2>
-<form action="/events/{= $event['event_id']}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the event named \'{= $event['name']}\'?');">
+<form action="{= BASE_URL}/events/{= $event['event_id']}/delete" method="POST" onsubmit="return confirm('Are you sure you want to delete the event named \'{= $event['name']}\'?');">
 	<button type="submit" class="btn btn-danger">
 		Delete Event
 	</button>
