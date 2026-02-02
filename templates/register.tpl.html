@@ -16,7 +16,7 @@
 			<small>Password is optional and not used for authentication. It is only stored in the database in plain text to make the DB leaks a little more interesting.</small>
 		</p>
 		<p>
-			<input type="checkbox" id="tosAgree" name="tosAgree" required>
+			<input type="checkbox" id="tosAgree" name="tosAgree" required onclick="event.target.disabled=true">
 			<label for="tosAgree">I Agree with the <a href="{= BASE_URL}/tos" target="_blank">Terms of Service</a> and Accept My Fate</label>
 		</p>
 		<button type="submit" class="btn">
