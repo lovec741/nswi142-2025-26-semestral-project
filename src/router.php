@@ -22,7 +22,9 @@ class Router {
 
 	public function handleRequest() {
 		$templateView = $this->componentManager->getByClass(TemplateView::class);
-		$requestPath = $_SERVER['PATH_INFO'] ?? "/";
+		$prefixPath = parse_url(BASE_URL, PHP_URL_PATH) ?? "";
+		$fullRequestPath = parse_url($_SERVER["REQUEST_URI"], PHP_URL_PATH);
+		$requestPath = substr($fullRequestPath, strlen($prefixPath));
 		$requestMethod = $_SERVER['REQUEST_METHOD'];
 
 		$matchedPath = null;
