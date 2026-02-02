@@ -149,7 +149,7 @@ foreach ($demoEvents as $demoEvent) {
 }
 
 $demoRegistrations = [
-    [1, 1, [1, 2]],
+    [3, 1, [1, 2]],
     [2, 1, [2]],
     [3, 2, [3]],
     [4, 2, [3, 4]],
