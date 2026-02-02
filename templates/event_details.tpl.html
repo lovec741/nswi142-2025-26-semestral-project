@@ -18,14 +18,14 @@
 		{if $isLoggedIn}
 			<div class="links-display">
 				{if $isEventOwner}
-					<a class="btn-link" href="/events/{= $event['event_id']}/edit">Edit →</a>
+					<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/edit">Edit →</a>
 				{/if}
 				{if !$isEventOwner}
 					{if !$isRegisteredToEvent}
-						<a class="btn-link" href="/events/{= $event['event_id']}/register">Register →</a>
+						<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register">Register →</a>
 					{/if}
 					{if $isRegisteredToEvent}
-						<a class="btn-link" href="/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+						<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
 					{/if}
 				{/if}
 			</div>

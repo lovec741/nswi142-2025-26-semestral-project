@@ -5,10 +5,10 @@
 {if !$isLoggedIn}
 	<p>Perhaps you forgot to login?</p>
 	<div class="btn-cont margin-bottom-md">
-		<a href="/login" class="btn-link">Login →</a>
+		<a href="{= BASE_URL}/login" class="btn-link">Login →</a>
 	</div>
 {/if}
 <div class="btn-cont">
-	<a href="/" class="btn-link">Back to landing page →</a>
+	<a href="{= BASE_URL}/" class="btn-link">Back to landing page →</a>
 </div>
 {include shared_bottom.tpl.html}

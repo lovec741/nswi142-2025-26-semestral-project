@@ -2,10 +2,10 @@
 <h1 class="margin-bottom-md">My Events</h1>
 <div class="margin-bottom-md">
 	{if !$showOldEvents}
-		<a class="btn-link" href="/events/mine?old=1">Show past events</a>
+		<a class="btn-link" href="{= BASE_URL}/events/mine?old=1">Show past events</a>
 	{/if}
 	{if $showOldEvents}
-		<a class="btn-link" href="/events/mine?old=0">Hide past events</a>
+		<a class="btn-link" href="{= BASE_URL}/events/mine?old=0">Hide past events</a>
 	{/if}
 </div>
 <h2 class="margin-bottom-none margin-top-none">Registered For:</h2>
@@ -32,7 +32,7 @@
 			<span><b>You Aren't Registered For Any Workshops!</b></span>
 			{/if}
 			<div class="links-display">
-				<a class="btn-link" href="/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
+				<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/register/edit">Edit Registration →</a>
 			</div>
 		</div>
 	{/foreach}
@@ -46,7 +46,7 @@
 <p>There are currently no events you are registered for!</p>
 {/if}
 <div class="btn-cont">
-	<a href="/events" class="btn-link btn-link-sm">See All Events Here →</a>
+	<a href="{= BASE_URL}/events" class="btn-link btn-link-sm">See All Events Here →</a>
 </div>
 {/if}
 
@@ -69,7 +69,7 @@
 				{/foreach}
 			</ul>
 			<div class="links-display">
-				<a class="btn-link" href="/events/{= $event['event_id']}/edit">Edit →</a>
+				<a class="btn-link" href="{= BASE_URL}/events/{= $event['event_id']}/edit">Edit →</a>
 			</div>
 		</div>
 	{/foreach}
@@ -83,7 +83,7 @@
 <p>You haven't created any events yet!</p>
 {/if}
 <div class="btn-cont">
-	<a href="/events/new" class="btn-link btn-link-sm">Create an Event Here →</a>
+	<a href="{= BASE_URL}/events/new" class="btn-link btn-link-sm">Create an Event Here →</a>
 </div>
 {/if}
 

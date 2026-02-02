@@ -1,30 +1,30 @@
 <form method="POST" action="/logout" id="logout-form"></form>
 <header class="container">
 	<nav class="navbar">
-		<a href="/" class="{if $path === '/'}active{/if} lead navbar-icon-link ">
+		<a href="{= BASE_URL}/" class="{if $path === '/'}active{/if} lead navbar-icon-link ">
 			<img class="navbar-icon-img" alt="Calendar Icon" src="{= BASE_URL}/static/img/calendar.svg">
 			EventHorizon
 		</a>
-		<a href="/events" class="{if $path === '/events'}active{/if} navbar-icon-link">
+		<a href="{= BASE_URL}/events" class="{if $path === '/events'}active{/if} navbar-icon-link">
 			<img class="navbar-icon-img" alt="Globe Icon" src="{= BASE_URL}/static/img/globe.svg">
 			All events
 		</a>
 		{if $isLoggedIn}
-			<a href="/events/mine" class="{if $path === '/events/mine'}active{/if} navbar-icon-link">
+			<a href="{= BASE_URL}/events/mine" class="{if $path === '/events/mine'}active{/if} navbar-icon-link">
 				<img class="navbar-icon-img" alt="Star Icon" src="{= BASE_URL}/static/img/star.svg">
 				My events
 			</a>
-			<a href="/events/new" class="{if $path === '/events/new'}active{/if} navbar-icon-link">
+			<a href="{= BASE_URL}/events/new" class="{if $path === '/events/new'}active{/if} navbar-icon-link">
 				<img class="navbar-icon-img" alt="Plus Icon" src="{= BASE_URL}/static/img/plus.svg">
 				Create Event
 			</a>
 		{/if}
 		{if !$isLoggedIn}
-			<a href="/login" class="{if $path === '/login'}active{/if} start-right-navbar-section">Login</a>
-			<a href="/register" class="{if $path === '/register'}active{/if}">Register</a>
+			<a href="{= BASE_URL}/login" class="{if $path === '/login'}active{/if} start-right-navbar-section">Login</a>
+			<a href="{= BASE_URL}/register" class="{if $path === '/register'}active{/if}">Register</a>
 		{/if}
 		{if $isLoggedIn}
-			<a href="/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
+			<a href="{= BASE_URL}/settings" class="{if $path === '/settings'}active{/if} start-right-navbar-section">{= $currentUsername }</a>
 			<a href="#" onclick="document.getElementById('logout-form').submit()" class="{if $path === '/logout'}active{/if} navbar-icon-link"><img class="navbar-icon-img" alt="Logout Icon" src="{= BASE_URL}/static/img/logout.svg"></a>
 		{/if}
 	</nav>
