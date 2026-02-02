@@ -58,7 +58,7 @@ class Router {
 				$presenter->$methodName(...$args);
 			}
 		} catch (Exception $e) {
-			var_export($e); // DEBUG
+			// var_export($e); // DEBUG
 			$templateView->renderTemplate("500");
 		}
 		$this->componentManager->getByName("shutdown_manager")->shutdown();
