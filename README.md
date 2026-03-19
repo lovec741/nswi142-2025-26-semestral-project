@@ -1,5 +1,8 @@
 # NSWI142 Semestral project
 
+## Demo
+[The project is being temporarily hosted here!](https://webik.ms.mff.cuni.cz/~56996303/semestral-project/)
+
 ## Screenshots
 ### Landing Page
 ![Landing Page Screenshot](readme_imgs/landing_page.png)
