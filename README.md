@@ -1,5 +1,10 @@
 # NSWI142 Semestral project
 
+## Specification
+This project is a web application written for NSWI142 and is based on [this specification](https://wiki.matfyz.cz/NSWI142/projekt-2025-26).
+
+The main goal was to write a working PHP web application without any frameworks or libraries.
+
 ## Demo
 [The project is being temporarily hosted here!](https://webik.ms.mff.cuni.cz/~56996303/semestral-project/)
 
@@ -43,3 +48,6 @@ The DB is assumed to be MYSQL (or fork)!
 1. I used AI to generate the arrays from which the demo data is generated.
 2. I used AI to debug CSS and SQL problems.
 3. I used AI to write the TOS.
+
+## Licensing of images
+This project uses some [Bootstrap icons](https://github.com/twbs/icons) which are distributed under the MIT license.
